@@ -1,6 +1,7 @@
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
+import seaborn as sns
 from header import DATA_PATH, AMOUNT_COLUMNS
 
 
@@ -40,18 +41,38 @@ def normalize_features(features_data):
     return norm_data
 
 
+def plot_correlation_matrix(corr_matrix, feature_names):
+    plt.figure(figsize=(10, 8))
+    plt.imshow(corr_matrix, cmap='coolwarm', interpolation='nearest')
+    plt.colorbar()
+    plt.title("Correlation Matrix of Features")
+    plt.xticks(ticks=np.arange(len(feature_names)), labels=feature_names, rotation=45)
+    plt.yticks(ticks=np.arange(len(feature_names)), labels=feature_names)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_pairplot(df, feature_cols):
+    sns.pairplot(df[feature_cols + ["diagnosis"]], hue="diagnosis", plot_kws={'alpha': 0.5})
+    plt.suptitle("Pairplot of Features", y=1.02)
+    plt.tight_layout()
+    plt.savefig("pairplot_features.png")
+
 
 def main():
     df = load_data(DATA_PATH)
     if df is not None:
         print("Data loaded successfully:")
-        df.columns = ["id", "dignosis"] + [f"feature_{i}" for i in range(0, AMOUNT_COLUMNS - 2)]
-        print(df.head())
+        df.columns = ["id", "diagnosis"] + [f"feature_{i}" for i in range(0, AMOUNT_COLUMNS - 2)]
+        print(df.head(10))
         print(df.describe())
         print(df.info())
         feature_cols = [col for col in df.columns if col.startswith('feature_')]
-        plot_features_histogram(df, feature_cols)
+        # plot_features_histogram(df, feature_cols)
         norm_data = normalize_features(df[feature_cols].to_numpy())
+        corr = np.corrcoef(norm_data, rowvar=False)
+        plot_correlation_matrix(corr, feature_cols)
+        plot_pairplot(df, feature_cols)
         
     else:
         print("Failed to load data.")
