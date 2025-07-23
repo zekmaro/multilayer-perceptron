@@ -32,6 +32,7 @@ class Preprocessing:
 		"""
 		try:
 			data = pd.read_csv(self.file_path, header=0 if header else None)
+			self.X = data
 		except FileNotFoundError as e:
 			raise FileNotFoundError(f"File not found: {e}")
 		except ValueError as e:
@@ -95,7 +96,7 @@ class Preprocessing:
 			raise ValueError("Invalid mapping, resulting in NaN values in target variable.")
 
 
-	def normalize(self):
+	def normalize_features(self):
 		"""
 		Normalize the features data using z-score normalization.
 		
