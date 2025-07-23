@@ -1,8 +1,13 @@
+from src.models.Preprocessing import Preprocessing
+import matplotlib.pyplot as plt
+from src.header import (
+	DATA_PATH,
+    COLUMNS,
+    LABEL_MAPPING
+)
+import seaborn as sns
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
-import seaborn as sns
-from header import DATA_PATH, AMOUNT_COLUMNS
 
 
 def load_data(file_path):
@@ -21,6 +26,7 @@ def load_data(file_path):
     except Exception as e:
         print(f"Error loading data: {e}")
         return None
+
 
 def plot_features_histogram(df, feature_cols):
     for col in feature_cols:
@@ -60,22 +66,18 @@ def plot_pairplot(df, feature_cols):
 
 
 def main():
-    df = load_data(DATA_PATH)
-    if df is not None:
-        print("Data loaded successfully:")
-        df.columns = ["id", "diagnosis"] + [f"feature_{i}" for i in range(0, AMOUNT_COLUMNS - 2)]
-        print(df.head(10))
-        print(df.describe())
-        print(df.info())
-        feature_cols = [col for col in df.columns if col.startswith('feature_')]
-        # plot_features_histogram(df, feature_cols)
-        norm_data = normalize_features(df[feature_cols].to_numpy())
-        corr = np.corrcoef(norm_data, rowvar=False)
-        plot_correlation_matrix(corr, feature_cols)
-        plot_pairplot(df, feature_cols)
-        
-    else:
-        print("Failed to load data.")
+    try:
+        processor = Preprocessing(DATA_PATH)
+        processor.load_data(header=True)
+        processor.name_columns(COLUMNS)
+        processor.extract_X_y(target_column="diagnosis", drop_columns=["id"])
+        processor.encode_target(LABEL_MAPPING)
+        processor.normalize_features()
+        X_train, y_train, X_test, y_test = processor.split_data(split_ratio=0.8)
+    except Exception as e:
+        print(f"Error during preprocessing: {e}")
+        return
+
 
 if __name__ == "__main__":
     main()
