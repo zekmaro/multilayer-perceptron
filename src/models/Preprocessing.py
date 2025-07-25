@@ -163,6 +163,7 @@ class Preprocessing:
 		"""
 		full_corr = df.corr()
 		target_corr = full_corr[target_column].drop(target_column).abs().sort_values(ascending=False)
+		print(f"Target correlation:\n{target_corr}")
 
 		strong_features = target_corr[target_corr > target_threshold].index.tolist()
 

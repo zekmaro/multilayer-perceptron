@@ -8,6 +8,14 @@ from src.header import (
 import matplotlib.pyplot as plt
 import pandas as pd
 
+
+def separation_score(df, feature, target='diagnosis'):
+    classes = df[target].unique()
+    means = [df[df[target] == c][feature].mean() for c in classes]
+    stds = [df[df[target] == c][feature].std() for c in classes]
+    return abs(means[0] - means[1]) / (stds[0] + stds[1] + 1e-6)  # small epsilon to avoid div by 0
+
+
 def main():
     try:
         processor = Preprocessing(DATA_PATH)
@@ -22,6 +30,20 @@ def main():
         best_features, redundant_features = processor.select_relevant_features(df)
         print(f"Best features: {best_features}")
         print(f"Redundant features: {redundant_features}")
+        df = df.drop(columns=redundant_features + ["id"], errors='ignore')
+        # plot_pairplot(df, df.columns.to_list(), "diagnosis", "plot.png")
+        processor.X = df.drop(columns=["diagnosis"])
+        processor.y = df["diagnosis"]
+
+        scores = {}
+        for feature in df.columns:
+            if feature != 'diagnosis':
+                scores[feature] = separation_score(df, feature)
+                
+        # Sort by score
+        import pprint
+        pprint.pprint(sorted(scores.items(), key=lambda x: x[1], reverse=True))
+
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
 
