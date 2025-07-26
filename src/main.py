@@ -27,24 +27,6 @@ def main():
         df = processor.df.copy()
         df['diagnosis'] = processor.y
 
-        best_features, redundant = processor.select_relevant_features(df)
-        print(f"Best features: {best_features}")
-        print(f"Redundant features: {redundant}")
-        df = df.drop(columns=["id"], errors='ignore')
-        # plot_pairplot(df, df.columns.to_list(), "diagnosis", "plot.png")
-
-        linear_dependent = best_features + redundant
-        corr_matrix = df.corr()
-        print("Correlation matrix:\n", corr_matrix)
-        plot_correlation_matrix(corr_matrix, df.columns.to_list())
-        corr_tuples = corr_matrix.unstack().sort_values(ascending=False)
-
-        explored_tuples = set()
-        for tuple, value in corr_tuples.items():
-            if abs(value) > 0.7 and tuple[0] != tuple[1] and (tuple[0] in linear_dependent or tuple[1] in linear_dependent) and not (tuple[0] in linear_dependent and tuple[1] in linear_dependent) and (tuple not in explored_tuples and (tuple[1], tuple[0]) not in explored_tuples):
-                print(f"High correlation: {tuple} -> {value}")
-                explored_tuples.add(tuple)
-    
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
 
