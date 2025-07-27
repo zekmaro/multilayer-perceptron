@@ -16,6 +16,20 @@ def separation_score(df, feature, target='diagnosis'):
     return abs(means[0] - means[1]) / (stds[0] + stds[1] + 1e-6)  # small epsilon to avoid div by 0
 
 
+def plot_value_distribution(df, feature, target='diagnosis'):
+    classes = df[target].unique()
+    plt.figure(figsize=(8, 6))
+    for c in classes:
+        subset = df[df[target] == c]
+        plt.hist(subset[feature], bins=30, alpha=0.5, label=f"{c} ({len(subset)})")
+    plt.title(f"Distribution of {feature} by {target}")
+    plt.xlabel(feature)
+    plt.ylabel("Frequency")
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
 def main():
     try:
         processor = Preprocessing(DATA_PATH)
@@ -23,10 +37,14 @@ def main():
         processor.name_columns(COLUMNS)
         processor.extract_X_y(target_column="diagnosis", drop_columns=["id"])
         processor.encode_target(LABEL_MAPPING)
-
+        print(processor.check_nulls(processor.df))
         df = processor.df.copy()
+        print(df.nunique())
+        plot_value_distribution(df, 'diagnosis')
         df['diagnosis'] = processor.y
+        plot_correlation_matrix(df.corr(), df.columns)
 
+        print(df.describe())
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
 

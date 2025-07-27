@@ -135,63 +135,8 @@ class Preprocessing:
 		return X_train, y_train, X_test, y_test
 
 
-	def select_relevant_features(
-		self,
-		df: pd.DataFrame,
-		target_column: str = 'diagnosis',
-		target_threshold: float = 0.7,
-		interfeature_threshold: float = 0.9,
-		return_corr_matrices: bool = False
-	) -> Tuple[List[str], List[str], pd.Series | None, pd.DataFrame | None]:
-		"""
-		Select features that are strongly correlated with the target and remove
-		redundant ones that are highly correlated among themselves.
-
-		Args:
-			df (pd.DataFrame): The full dataset including the target.
-			target_column (str): The column name of the target variable.
-			target_threshold (float): Min absolute correlation with target to keep a feature.
-			interfeature_threshold (float): Min absolute correlation between features to consider them redundant.
-			return_corr_matrices (bool): Whether to return correlation info for visualization/debugging.
-
-		Returns:
-			Tuple containing:
-			- List[str]: Strong, non-redundant features to keep.
-			- List[str]: Redundant features removed.
-			- pd.Series | None: Correlation of each feature with the target (if requested).
-			- pd.DataFrame | None: Correlation matrix of strong features (if requested).
-		"""
-		full_corr = df.corr()
-		target_corr = full_corr[target_column].drop(target_column).abs().sort_values(ascending=False)
-		print(f"Target correlation:\n{target_corr}")
-
-		strong_features = target_corr[target_corr > target_threshold].index.tolist()
-
-		strong_corr = df[strong_features].corr().abs()
-
-		correlated_groups = []
-		used = set()
-
-		for feature in strong_features:
-			if feature not in used:
-				group = set([feature])
-				for other in strong_features:
-					if other != feature and other not in used:
-						if strong_corr.loc[feature, other] > interfeature_threshold:
-							group.add(other)
-							used.add(other)
-				correlated_groups.append(group)
-
-		best_features = []
-		for group in correlated_groups:
-			best = max(group, key=lambda f: target_corr[f])
-			best_features.append(best)
-
-		redundant_features = list(set(strong_features) - set(best_features))
-
-		if return_corr_matrices:
-			return best_features, redundant_features, target_corr, strong_corr
-		return best_features, redundant_features
+	def check_nulls(self, df):
+		return df.isnull().values.any()
 
 
 	def preprocess(self):
