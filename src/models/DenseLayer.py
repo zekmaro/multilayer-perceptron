@@ -16,6 +16,10 @@ class DenseLayer:
         pass
 
 
+    def backward(self, grad_output):
+        pass
+
+
     def activate(self, inputs):
         pass
 

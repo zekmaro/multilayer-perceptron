@@ -82,7 +82,7 @@ def main():
         print("Data after dropping worst features and others:")
         print(df.columns)
 
-        plot_correlation_matrix(df.drop(columns=['diagnosis', 'id']).corr())
+        # plot_correlation_matrix(df.drop(columns=['diagnosis', 'id']).corr())
 
         X = df.drop(columns=['diagnosis', 'id'])
         y = df['diagnosis']
