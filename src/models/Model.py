@@ -9,7 +9,7 @@ class Model:
 		return Network(layers)
 
 
-	def fit(self, X, y, epochs=100, batch_size=32, learning_rate=0.01):
+	def fit(self, network, X, y, epochs=100, batch_size=32, learning_rate=0.01):
 		"""
 		Train the model on the provided data.
 		"""

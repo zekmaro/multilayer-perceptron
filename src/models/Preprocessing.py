@@ -164,7 +164,6 @@ class Preprocessing:
         return correlated_groups
 
 
-
     def check_nulls(self, df) -> bool:
         return df.isnull().values.any()
 

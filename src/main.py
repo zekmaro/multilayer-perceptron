@@ -1,5 +1,7 @@
 from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot
 from src.models.Preprocessing import Preprocessing
+from src.models.Model import Model
+from src.models.DenseLayer import DenseLayer
 from src.header import (
 	DATA_PATH,
     COLUMNS,
@@ -84,11 +86,22 @@ def main():
 
         # plot_correlation_matrix(df.drop(columns=['diagnosis', 'id']).corr())
 
-        X = df.drop(columns=['diagnosis', 'id'])
-        y = df['diagnosis']
+        processor.X = df.drop(columns=['diagnosis', 'id'])
+        processor.y = df['diagnosis']
 
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
+        print(X_train.shape)
+
+        layers = [
+            DenseLayer(units=24, activation='relu', input_dim=X_train.shape[1]),
+            DenseLayer(units=16, activation='relu'),
+            DenseLayer(units=2, activation='softmax'),
+        ]
+        model = Model()
+        network = model.create_network(layers)
+        model.fit(network, X_train, y_train, epochs=100, batch_size=32, learning_rate=0.01)
+            
 
     except Exception as e:
         print(f"Error during preprocessing: {e}")
