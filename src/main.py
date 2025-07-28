@@ -1,9 +1,10 @@
-from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot
+from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted
 from src.models.Preprocessing import Preprocessing
 from src.header import (
 	DATA_PATH,
     COLUMNS,
     LABEL_MAPPING,
+    CORR_GROUPS,
     MEAN_FEATURES
 )
 import matplotlib.pyplot as plt
@@ -54,14 +55,17 @@ def main():
         # print("Correlated feature groups:")
         # pprint.pprint(corr_groups)
 
-        df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ['diagnosis'])
-        sns.pairplot(df_mean, hue="diagnosis", diag_kind='kde',palette = ["blue","green"])
-        plt.suptitle("Pairplot of Mean Features", y=1.02)
-        plt.tight_layout()
-        plt.savefig("mean_features_pairplot.png")
-
+        # df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ['diagnosis'])
+        # sns.pairplot(df_mean, hue="diagnosis", diag_kind='kde',palette = ["blue","green"])
+        # plt.suptitle("Pairplot of Mean Features", y=1.02)
+        # plt.tight_layout()
+        # plt.savefig("mean_features_pairplot.png")
 
         print(df.describe())
+
+        for group in CORR_GROUPS:
+            plot_boxplot_melted(df, group, 'diagnosis')
+            plot_violinplot_melted(df, group, 'diagnosis')
 
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()

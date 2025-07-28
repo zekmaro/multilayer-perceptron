@@ -51,3 +51,36 @@ def plot_pairplot(df, feature_cols, target_col, filename):
     plt.suptitle("Pairplot of Selected Features", y=1.02)
     plt.tight_layout()
     plt.savefig(filename)
+
+
+def plot_boxplot_melted(df, features_cols, target_col):
+    """
+    Create box plots for selected features grouped by a target column.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data.
+        features_cols (List[str]): List of feature column names.
+        target_col (str): Name of the target column.
+    """
+    df_melted = df.melt(id_vars='diagnosis', value_vars=features_cols, var_name='feature', value_name='value')
+    sns.boxplot(x='feature', y='value', hue='diagnosis', data=df_melted)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
+
+
+def plot_violinplot_melted(df, features_cols, target_col):
+    """
+    Create violin plots for selected features grouped by a target column.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data.
+        features_cols (List[str]): List of feature column names.
+        target_col (str): Name of the target column.
+    """
+    
+    df_melted = df.melt(id_vars='diagnosis', value_vars=features_cols, var_name='feature', value_name='value')
+    sns.violinplot(x='feature', y='value', hue='diagnosis', data=df_melted, split=True)
+    plt.xticks(rotation=45)
+    plt.tight_layout()
+    plt.show()
