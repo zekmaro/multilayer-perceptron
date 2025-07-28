@@ -41,3 +41,24 @@ MEAN_FEATURES = [
     "radius_mean", "texture_mean", "perimeter_mean", "area_mean", "smoothness_mean",
     "compactness_mean", "concavity_mean", "concave_points_mean", "symmetry_mean", "fractal_dimension_mean"
 ]
+
+DROP_WORST = [
+    "radius_worst", "texture_worst", "perimeter_worst", "area_worst", "smoothness_worst",
+    "compactness_worst", "concavity_worst", "concave_points_worst", "symmetry_worst", "fractal_dimension_worst"
+]
+
+DROP_PERIMETER = [
+    "perimeter_mean", "perimeter_se"
+]
+
+DROP_AREA = [
+    "area_mean", "area_se"
+]
+
+DROP_CONCAVITY = [
+    "concavity_mean", "concavity_se"
+]
+
+DROP_CONCAVE_POINTS = [
+    "concave_points_mean", "concave_points_se"
+]

@@ -24,7 +24,7 @@ def plot_correlation_matrix(corr_matrix):
     plt.yticks(rotation=0)
     plt.tight_layout()
     plt.show()
-
+    # plt.savefig("correlation_matrix.png")
 
 
 def plot_pairplot(df, feature_cols, target_col, filename):
@@ -103,3 +103,22 @@ def density_plot(df, feature, target='diagnosis'):
     plt.tight_layout()
     plt.show()
 
+
+
+def count_plot(df, feature, target='diagnosis'):
+    """
+    Create a count plot for a feature grouped by the target column.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data.
+        feature (str): Name of the feature to plot.
+        target (str): Name of the target column.
+    """
+    sns.countplot(data=df, x=feature, hue=target)
+    plt.title(f"Count Plot of {feature} by {target}")
+    plt.xlabel(feature)
+    plt.ylabel("Count")
+    plt.xticks(rotation=45)
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()

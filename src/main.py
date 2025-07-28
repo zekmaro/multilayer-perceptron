@@ -4,8 +4,14 @@ from src.header import (
 	DATA_PATH,
     COLUMNS,
     LABEL_MAPPING,
+    MEAN_FEATURES,
     CORR_GROUPS,
-    GROUPED_FEATURES
+    GROUPED_FEATURES,
+    DROP_WORST,
+    DROP_PERIMETER,
+    DROP_AREA,
+    DROP_CONCAVITY,
+    DROP_CONCAVE_POINTS
 )
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -45,27 +51,41 @@ def main():
         df = processor.df.copy()
         print(df.nunique())
         df['diagnosis'] = processor.y
+        print(df.describe().T)
         # plot_pairplot(df, COLUMNS, 'diagnosis', 'pairplot.png')
 
-        plot_value_distribution(df, 'diagnosis')
+        # plot_value_distribution(df, 'diagnosis')
 
         corr_matrix = df.drop(columns=['diagnosis']).corr()
-        plot_correlation_matrix(corr_matrix)
+
+        # plot_correlation_matrix(corr_matrix)
+
+        # df.hist(figsize=(15, 10), color='orange')
+        # plt.tight_layout()
+        # plt.savefig("histograms.png")
+    
         # corr_groups = processor.group_correlated_features(corr_matrix)
         # print("Correlated feature groups:")
         # pprint.pprint(corr_groups)
 
         # df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ['diagnosis'])
-        # sns.pairplot(df_mean, hue="diagnosis", diag_kind='kde',palette = ["blue","green"])
+        # sns.pairplot(df_mean, hue="diagnosis", diag_kind='kde',palette = 'rocket')
         # plt.suptitle("Pairplot of Mean Features", y=1.02)
         # plt.tight_layout()
         # plt.savefig("mean_features_pairplot.png")
 
-        print(df.describe())
+        # for group in GROUPED_FEATURES:
+            # plot_boxplot_melted(df, group, 'diagnosis')
+            # plot_violinplot_melted(df, group, 'diagnosis')
 
-        for group in GROUPED_FEATURES:
-            plot_boxplot_melted(df, group, 'diagnosis')
-            plot_violinplot_melted(df, group, 'diagnosis')
+        df = df.drop(columns=DROP_WORST + DROP_PERIMETER + DROP_AREA + DROP_CONCAVITY + DROP_CONCAVE_POINTS)
+        print("Data after dropping worst features and others:")
+        print(df.columns)
+
+        plot_correlation_matrix(df.drop(columns=['diagnosis', 'id']).corr())
+
+        X = df.drop(columns=['diagnosis', 'id'])
+        y = df['diagnosis']
 
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
