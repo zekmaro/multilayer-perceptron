@@ -1,11 +1,11 @@
-from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted
+from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot
 from src.models.Preprocessing import Preprocessing
 from src.header import (
 	DATA_PATH,
     COLUMNS,
     LABEL_MAPPING,
     CORR_GROUPS,
-    MEAN_FEATURES
+    GROUPED_FEATURES
 )
 import matplotlib.pyplot as plt
 import pandas as pd
@@ -63,7 +63,7 @@ def main():
 
         print(df.describe())
 
-        for group in CORR_GROUPS:
+        for group in GROUPED_FEATURES:
             plot_boxplot_melted(df, group, 'diagnosis')
             plot_violinplot_melted(df, group, 'diagnosis')
 

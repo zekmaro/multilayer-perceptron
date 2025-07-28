@@ -26,6 +26,17 @@ CORR_GROUPS = [
     ['symmetry_mean', 'symmetry_worst']
 ]
 
+GROUPED_FEATURES = [
+    ["radius_mean", "radius_se", "radius_worst"],
+    ["texture_mean", "texture_se", "texture_worst"],
+    ["perimeter_mean", "perimeter_se", "perimeter_worst"],
+    ["area_mean", "area_se", "area_worst"],
+    ["smoothness_mean", "smoothness_se", "smoothness_worst"],
+    ["compactness_mean", "compactness_se", "compactness_worst"],
+    ["concavity_mean", "concavity_se", "concavity_worst"],
+    ["concave_points_mean", "concave_points_se", "concave_points_worst"]
+]
+
 MEAN_FEATURES = [
     "radius_mean", "texture_mean", "perimeter_mean", "area_mean", "smoothness_mean",
     "compactness_mean", "concavity_mean", "concave_points_mean", "symmetry_mean", "fractal_dimension_mean"

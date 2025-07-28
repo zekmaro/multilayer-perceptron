@@ -84,3 +84,22 @@ def plot_violinplot_melted(df, features_cols, target_col):
     plt.xticks(rotation=45)
     plt.tight_layout()
     plt.show()
+
+
+def density_plot(df, feature, target='diagnosis'):
+    """
+    Create a density plot for a feature grouped by the target column.
+
+    Args:
+        df (pd.DataFrame): DataFrame containing the data.
+        feature (str): Name of the feature to plot.
+        target (str): Name of the target column.
+    """
+    sns.kdeplot(data=df, x=feature, hue=target, fill=True, common_norm=False)
+    plt.title(f"Density Plot of {feature} by {target}")
+    plt.xlabel(feature)
+    plt.ylabel("Density")
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
+
