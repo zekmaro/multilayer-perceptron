@@ -15,14 +15,9 @@ def plot_features_histogram(df, feature_cols):
         plt.show()
 
 
-def plot_correlation_matrix(corr_matrix, feature_names):
-    plt.figure(figsize=(10, 8))
-    plt.imshow(corr_matrix, cmap='coolwarm', interpolation='nearest')
-    plt.colorbar()
-    plt.title("Correlation Matrix of Features")
-    plt.xticks(ticks=np.arange(len(feature_names)), labels=feature_names, rotation=45)
-    plt.yticks(ticks=np.arange(len(feature_names)), labels=feature_names)
-    plt.tight_layout()
+def plot_correlation_matrix(corr_matrix):
+    plt.figure(figsize =(30,30))
+    sns.heatmap(corr_matrix, vmin=-1, vmax=1, annot=True)
     plt.show()
 
 

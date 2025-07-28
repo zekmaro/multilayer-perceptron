@@ -42,7 +42,7 @@ def main():
         print(df.nunique())
         plot_value_distribution(df, 'diagnosis')
         df['diagnosis'] = processor.y
-        plot_correlation_matrix(df.corr(), df.columns)
+        plot_correlation_matrix(df.corr())
 
         print(df.describe())
         processor.normalize_features()
