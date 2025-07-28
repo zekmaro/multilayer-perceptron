@@ -16,9 +16,15 @@ def plot_features_histogram(df, feature_cols):
 
 
 def plot_correlation_matrix(corr_matrix):
-    plt.figure(figsize =(30,30))
-    sns.heatmap(corr_matrix, vmin=-1, vmax=1, annot=True)
+    n = len(corr_matrix)
+    cell_size = 0.5  # size per cell in inches; increase this to make it bigger
+    plt.figure(figsize=(cell_size * n, cell_size * n))
+    sns.heatmap(corr_matrix, vmin=-1, vmax=1, annot=True, annot_kws={"size": 10})
+    plt.xticks(rotation=45, ha='right')
+    plt.yticks(rotation=0)
+    plt.tight_layout()
     plt.show()
+
 
 
 def plot_pairplot(df, feature_cols, target_col, filename):

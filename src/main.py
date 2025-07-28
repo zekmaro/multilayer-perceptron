@@ -3,10 +3,13 @@ from src.models.Preprocessing import Preprocessing
 from src.header import (
 	DATA_PATH,
     COLUMNS,
-    LABEL_MAPPING
+    LABEL_MAPPING,
+    MEAN_FEATURES
 )
 import matplotlib.pyplot as plt
 import pandas as pd
+import pprint
+import seaborn as sns
 
 
 def separation_score(df, feature, target='diagnosis'):
@@ -40,11 +43,26 @@ def main():
         print(processor.check_nulls(processor.df))
         df = processor.df.copy()
         print(df.nunique())
-        plot_value_distribution(df, 'diagnosis')
         df['diagnosis'] = processor.y
-        plot_correlation_matrix(df.corr())
+        # plot_pairplot(df, COLUMNS, 'diagnosis', 'pairplot.png')
+
+        plot_value_distribution(df, 'diagnosis')
+
+        corr_matrix = df.drop(columns=['diagnosis']).corr()
+        plot_correlation_matrix(corr_matrix)
+        # corr_groups = processor.group_correlated_features(corr_matrix)
+        # print("Correlated feature groups:")
+        # pprint.pprint(corr_groups)
+
+        df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ['diagnosis'])
+        sns.pairplot(df_mean, hue="diagnosis", diag_kind='kde',palette = ["blue","green"])
+        plt.suptitle("Pairplot of Mean Features", y=1.02)
+        plt.tight_layout()
+        plt.savefig("mean_features_pairplot.png")
+
 
         print(df.describe())
+
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
 
