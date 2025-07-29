@@ -94,9 +94,9 @@ def main():
         # print(X_train.shape)
 
         layers = [
-            DenseLayer(units=24, activation='relu', input_dim=X_train.shape[1]),
-            DenseLayer(units=16, activation='relu'),
-            DenseLayer(units=2, activation='softmax'),
+            DenseLayer(units=24, activation_name='relu', input_dim=X_train.shape[1]),
+            DenseLayer(units=16, activation_name='relu'),
+            DenseLayer(units=2, activation_name='softmax'),
         ]
         model = Model()
         network = model.create_network(layers)

@@ -2,6 +2,7 @@ import numpy as np
 
 
 class DenseLayer:
+    """Class for a dense layer in a neural network."""
     def __init__(
         self, 
         units: int, 
@@ -17,6 +18,19 @@ class DenseLayer:
             activation_name (str): Activation function name ('relu', 'sigmoid', 'softmax').
             input_dim (int, optional): Input dimension for the layer. Required for weight initialization.
             weights_initializer (str): Method to initialize weights ('heUniform' or others).
+        
+        Attributes:
+            units (int): Number of neurons in the layer.
+            activation_name (str): Name of the activation function.
+            weights_initializer (str): Method to initialize weights.
+            input_dim (int): Input dimension for the layer.
+            inputs (np.ndarray): Input data to the layer.
+            weights (np.ndarray): Weights of the layer.
+            bias (np.ndarray): Biases of the layer.
+            z (np.ndarray): Linear combination of inputs and weights plus bias.
+            a (np.ndarray): Activated output of the layer.
+            dL_dW (np.ndarray): Gradient of the loss with respect to weights.
+            dL_db (np.ndarray): Gradient of the loss with respect to biases.
         """
         self.units = units
         self.activation_name = activation_name
