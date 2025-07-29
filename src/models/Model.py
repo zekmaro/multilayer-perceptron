@@ -34,10 +34,10 @@ class Model:
             for layer in network.layers:
                 layer.inputs = X
                 X = layer.forward(X)
-            
-            loss = self.compute_loss(X, y)
+            y_pred = X
+            loss = self.compute_loss(y_pred, y)
             self.loss_history.append(loss)
-            grad_output = self.compute_loss_gradient(X, y)
+            grad_output = self.compute_loss_gradient(y_pred, y)
             
             for layer in reversed(network.layers):
                 grad_output = layer.backward(grad_output)
@@ -61,18 +61,18 @@ class Model:
             return -np.mean(y * np.log(X + 1e-15))
 
 
-    def compute_loss_gradient(self, X, y, loss_function='cross_entropy'):
+    def compute_loss_gradient(self, y_pred, y_true, loss_function='cross_entropy'):
         """
         Compute the gradient of the loss with respect to the predictions.
         
         Args:
-            X (np.ndarray): Predictions from the network.
-            y (np.ndarray): True labels.
+            y_pred (np.ndarray): Predictions from the network.
+            y_true (np.ndarray): True labels.
             loss_function (str): Type of loss function to use.
         
         Returns:
             np.ndarray: Gradient of the loss with respect to predictions.
         """
         if loss_function == 'cross_entropy':
-            return -y / (X + 1e-15)
+            return -y_true / (y_pred + 1e-15)
         return None
