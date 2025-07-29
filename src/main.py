@@ -91,7 +91,7 @@ def main():
 
         processor.normalize_features()
         X_train, y_train, X_test, y_test = processor.split_data()
-        print(X_train.shape)
+        # print(X_train.shape)
 
         layers = [
             DenseLayer(units=24, activation='relu', input_dim=X_train.shape[1]),
@@ -101,7 +101,7 @@ def main():
         model = Model()
         network = model.create_network(layers)
         model.fit(network, X_train, y_train, epochs=100, batch_size=32, learning_rate=0.01)
-            
+
 
     except Exception as e:
         print(f"Error during preprocessing: {e}")

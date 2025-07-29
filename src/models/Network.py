@@ -16,5 +16,3 @@ class Network:
 		for layer in self.layers:
 			inputs = layer.activate(inputs)
 		return inputs
-	
-	

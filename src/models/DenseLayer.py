@@ -1,3 +1,6 @@
+import numpy as np
+
+
 class DenseLayer:
     def __init__(self, units, activation='relu', input_dim=None, weights_initializer='heUniform'):
         self.units = units
@@ -9,7 +12,11 @@ class DenseLayer:
 
 
     def initialize_weights(self):
-        pass
+        if self.input_dim is None:
+            raise ValueError("Input dimension must be set before initializing weights.")
+
+        stddev = np.sqrt(2 / self.input_dim)
+        self.weights = np.random.normal(0, stddev, (self.input_dim, self.units))
 
 
     def forward(self, inputs):
