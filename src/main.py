@@ -1,4 +1,4 @@
-from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot
+from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot, plot_loss_history
 from src.models.Preprocessing import Preprocessing
 from src.models.Model import Model
 from src.models.DenseLayer import DenseLayer
@@ -19,6 +19,7 @@ import matplotlib.pyplot as plt
 import pandas as pd
 import pprint
 import seaborn as sns
+import numpy as np
 
 
 def separation_score(df, feature, target='diagnosis'):
@@ -43,17 +44,17 @@ def plot_value_distribution(df, feature, target='diagnosis'):
     plt.show()
 
 def main():
-    try:
+    # try:
         processor = Preprocessing(DATA_PATH)
         processor.load_data(header=True)
         processor.name_columns(COLUMNS)
         processor.extract_X_y(target_column="diagnosis", drop_columns=["id"])
         processor.encode_target(LABEL_MAPPING)
-        print(processor.check_nulls(processor.df))
+        # print(processor.check_nulls(processor.df))
         df = processor.df.copy()
-        print(df.nunique())
+        # print(df.nunique())
         df['diagnosis'] = processor.y
-        print(df.describe().T)
+        # print(df.describe().T)
         # plot_pairplot(df, COLUMNS, 'diagnosis', 'pairplot.png')
 
         # plot_value_distribution(df, 'diagnosis')
@@ -81,8 +82,8 @@ def main():
             # plot_violinplot_melted(df, group, 'diagnosis')
 
         df = df.drop(columns=DROP_WORST + DROP_PERIMETER + DROP_AREA + DROP_CONCAVITY + DROP_CONCAVE_POINTS)
-        print("Data after dropping worst features and others:")
-        print(df.columns)
+        # print("Data after dropping worst features and others:")
+        # print(df.columns)
 
         # plot_correlation_matrix(df.drop(columns=['diagnosis', 'id']).corr())
 
@@ -100,12 +101,17 @@ def main():
         ]
         model = Model()
         network = model.create_network(layers)
-        model.fit(network, X_train, y_train, epochs=100, batch_size=32, learning_rate=0.01)
+        model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.01)
 
+        plot_loss_history(model.loss_history)
+        y_pred = network.forward(X_test)
+        pred_classes = np.argmax(y_pred, axis=1)
+        accuracy = np.mean(pred_classes == y_test)
+        print(f"Test accuracy: {accuracy:.2f}")
 
-    except Exception as e:
-        print(f"Error during preprocessing: {e}")
-        return
+    # except Exception as e:
+    #     print(f"Error during preprocessing: {e}")
+    #     return
 
 
 if __name__ == "__main__":

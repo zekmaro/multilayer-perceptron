@@ -17,24 +17,25 @@ class Model:
         """
         Create a neural network with the specified architecture.
         """
-        for i in range(1, len(layers)):
+        for i in range(0, len(layers)):
             if layers[i].input_dim is None:
                 layers[i].input_dim = layers[i - 1].units
             layers[i].initialize()
         return Network(layers)
 
 
-    def fit(self, network, X, y, epochs=100, batch_size=32, learning_rate=0.01):
+    def fit(self, network, X, y, epochs=1000, batch_size=32, learning_rate=0.01):
         """
         Train the model on the provided data.
         """
 
         # implement early stopping
         for _ in range(epochs):
+            inputs = X
             for layer in network.layers:
-                layer.inputs = X
-                X = layer.forward(X)
-            y_pred = X
+                layer.inputs = inputs
+                inputs = layer.forward(inputs)
+            y_pred = inputs
             loss = self.compute_loss(y_pred, y)
             self.loss_history.append(loss)
             grad_output = self.compute_loss_gradient(y_pred, y)
@@ -58,7 +59,7 @@ class Model:
             float: Computed loss value.
         """
         if loss_function == 'cross_entropy':
-            return -np.mean(y_true * np.log(y_pred + 1e-15) + (1 - y_true) * np.log(1 - y_pred + 1e-15))
+            return -np.mean(y_true * np.log(y_pred[:, 1] + 1e-15) + (1 - y_true) * np.log(y_pred[:, 0] + 1e-15))
 
 
     def compute_loss_gradient(self, y_pred, y_true, loss_function='cross_entropy'):
@@ -74,5 +75,7 @@ class Model:
             np.ndarray: Gradient of the loss with respect to predictions.
         """
         if loss_function == 'cross_entropy':
-            return y_pred - y_true
+            one_hot = np.zeros_like(y_pred)
+            one_hot[np.arange(len(y_true)), y_true] = 1
+            return y_pred - one_hot
         return None

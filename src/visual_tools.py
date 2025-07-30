@@ -122,3 +122,21 @@ def count_plot(df, feature, target='diagnosis'):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+def plot_loss_history(loss_history):
+    """
+    Plot the loss history over epochs.
+
+    Args:
+        loss_history (list): List of loss values recorded during training.
+    """
+    plt.figure(figsize=(10, 5))
+    plt.plot(loss_history, label='Loss', color='blue')
+    plt.title('Loss History')
+    plt.xlabel('Epochs')
+    plt.ylabel('Loss')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
