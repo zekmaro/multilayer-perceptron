@@ -45,7 +45,7 @@ class Model:
                 layer.bias -= learning_rate * layer.dL_db
 
 
-    def compute_loss(self, X, y, loss_function='cross_entropy'):
+    def compute_loss(self, y_pred, y_true, loss_function='cross_entropy'):
         """
         Compute the loss for the current predictions.
         
@@ -58,7 +58,7 @@ class Model:
             float: Computed loss value.
         """
         if loss_function == 'cross_entropy':
-            return -np.mean(y * np.log(X + 1e-15))
+            return -np.mean(y_true * np.log(y_pred + 1e-15) + (1 - y_true) * np.log(1 - y_pred + 1e-15))
 
 
     def compute_loss_gradient(self, y_pred, y_true, loss_function='cross_entropy'):
@@ -74,5 +74,5 @@ class Model:
             np.ndarray: Gradient of the loss with respect to predictions.
         """
         if loss_function == 'cross_entropy':
-            return -y_true / (y_pred + 1e-15)
+            return y_pred - y_true
         return None

@@ -81,10 +81,13 @@ class DenseLayer:
         Returns:
             np.ndarray: Gradient of the loss with respect to the layer's input.
         """
-        dz = grad_output * self.activation_derivative(self.z)
-        dL_dW = np.dot(self.inputs.T, dz)
-        dL_db = np.sum(dz, axis=0)
-        dL_dX = np.dot(dz, self.weights.T)
+        if self.activation_name == 'softmax':
+            dL_dz = grad_output
+        else:
+            dL_dz = grad_output * self.activation_derivative(self.z)
+        dL_dW = np.dot(self.inputs.T, dL_dz)
+        dL_db = np.sum(dL_dz, axis=0)
+        dL_dX = np.dot(dL_dz, self.weights.T)
 
         self.dL_dW = dL_dW
         self.dL_db = dL_db
