@@ -81,7 +81,7 @@ def main():
             # plot_boxplot_melted(df, group, 'diagnosis')
             # plot_violinplot_melted(df, group, 'diagnosis')
 
-        df = df.drop(columns=DROP_WORST + DROP_PERIMETER + DROP_AREA + DROP_CONCAVITY + DROP_CONCAVE_POINTS)
+        # df = df.drop(columns=DROP_WORST + DROP_PERIMETER + DROP_AREA + DROP_CONCAVITY + DROP_CONCAVE_POINTS)
         # print("Data after dropping worst features and others:")
         # print(df.columns)
 
@@ -95,15 +95,15 @@ def main():
         # print(X_train.shape)
 
         layers = [
-            DenseLayer(units=24, activation_name='relu', input_dim=X_train.shape[1]),
-            DenseLayer(units=16, activation_name='relu'),
+            DenseLayer(units=16, activation_name='relu', input_dim=X_train.shape[1]),
+            DenseLayer(units=8, activation_name='relu'),
             DenseLayer(units=2, activation_name='softmax'),
         ]
         model = Model()
         network = model.create_network(layers)
-        model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.01)
+        model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
 
-        plot_loss_history(model.loss_history)
+        # plot_loss_history(model.loss_history)
         y_pred = network.forward(X_test)
         pred_classes = np.argmax(y_pred, axis=1)
         accuracy = np.mean(pred_classes == y_test)
