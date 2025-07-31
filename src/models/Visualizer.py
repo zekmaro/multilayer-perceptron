@@ -12,9 +12,8 @@ class Visualizer:
     def plot_correlation_matrix(
             self,
             corr_matrix: pd.DataFrame,
-            title: str,
             save_in_file: bool = True,
-            filename: str = 'correlation_matrix.png'
+            filename: str = 'plot/correlation_matrix.png'
         ) -> None:
         """
         Plot a correlation matrix using seaborn heatmap.
@@ -41,7 +40,7 @@ class Visualizer:
             data: pd.DataFrame,
             target_col: str,
             title: str,
-            filename: str,
+            filename: str = 'plots/mean_features_pairplot.png',
             save_in_file: bool = True
         ) -> None:
         """

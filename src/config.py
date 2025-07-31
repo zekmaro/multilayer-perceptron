@@ -1,4 +1,4 @@
-model_configs = [
+MODEL_CONFIGS = [
     {
         "name": "ADAM",
         "layers": [

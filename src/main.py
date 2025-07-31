@@ -2,6 +2,7 @@ from src.models.Preprocessing import Preprocessing
 from src.models.DenseLayer import DenseLayer
 from src.models.Visualizer import Visualizer
 from src.models.Model import Model
+from src.config import MODEL_CONFIGS
 from src.header import (
     LABEL_MAPPING,
     MEAN_FEATURES,
@@ -10,9 +11,10 @@ from src.header import (
     COLUMNS,
 )
 import pandas as pd
+import numpy as np
 
 
-def load_and_prepare_data(processor, target_column) -> None:
+def load_and_prepare_data(processor, target_column: str) -> None:
     """
     Load and prepare the dataset for analysis.
     """
@@ -30,7 +32,38 @@ def explore_dataset(df, visualizer):
     visualizer.plot_correlation_matrix(df.corr())
     visualizer.plot_histograms(df)
     df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ["diagnosis"])
-    visualizer.plot_pairplot(df_mean, "diagnosis", "Pairplot of Mean Features", 'plots/mean_features_pairplot.png')
+    visualizer.plot_pairplot(df_mean, "diagnosis", "Pairplot of Mean Features")
+
+
+def train_models(
+        X_train: pd.DataFrame,
+        y_train: np.dnarray,
+        X_test: pd.DataFrame,
+        y_test: np.dnarray
+    ) -> None:
+    """
+    Train models based on the configurations defined in MODEL_CONFIGS.
+
+    Args:
+        X_train (pd.DataFrame): Training features.
+        y_train (np.dnarray): Training labels.
+        X_test (pd.DataFrame): Testing features.
+        y_test (np.dnarray): Testing labels.
+    """
+    for config in MODEL_CONFIGS:
+        model = Model(name=config["name"])
+        layers = [DenseLayer(**layer) for layer in config["layers"]]
+        network = model.create_network(layers)
+        model.fit(
+            network,
+            X_train,
+            y_train.to_numpy(),
+            epochs=config["params"]["epochs"],
+            batch_size=config["params"]["batch_size"],
+            learning_rate=config["params"]["learning_rate"]
+        )
+        accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
+        print(f"Model {config['name']} accuracy: {accuracy:.2f}")
 
 
 def main():
@@ -40,7 +73,7 @@ def main():
     df = processor.df.copy()
     df['diagnosis'] = processor.y
 
-    visualizer = Visualizer(processor.df)
+    visualizer = Visualizer()
     explore_dataset(df, visualizer)
 
     processor.X = df.drop(columns=['diagnosis', 'id'])
@@ -51,20 +84,7 @@ def main():
     print(X_train.shape)
     print(y_train.shape)
 
-    model = Model()
-    layers = [
-        DenseLayer(units=16, activation_name='relu', input_dim=X_train.shape[1]),
-        DenseLayer(units=8, activation_name='relu'),
-        DenseLayer(units=2, activation_name='softmax'),
-    ]
-    network = model.create_network(layers)
-    model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
-
-    accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
-    print(f"Model accuracy: {accuracy:.2f}")
-
-    visualizer.plot_loss_history(model.loss_history)
-    visualizer.plot_accuracy_history(model.accuracy_history)
+    train_models(X_train, y_train, X_test, y_test)
 
 
 if __name__ == "__main__":
