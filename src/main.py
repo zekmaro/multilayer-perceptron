@@ -3,17 +3,10 @@ from src.models.DenseLayer import DenseLayer
 from src.models.Visualizer import Visualizer
 from src.models.Model import Model
 from src.header import (
-    DROP_CONCAVE_POINTS,
-    GROUPED_FEATURES,
-    DROP_PERIMETER,
-    DROP_CONCAVITY,
     LABEL_MAPPING,
     MEAN_FEATURES,
     DROP_COLUMNS,
-    CORR_GROUPS,
-    DROP_WORST,
 	DATA_PATH,
-    DROP_AREA,
     COLUMNS,
 )
 import pandas as pd
