@@ -32,20 +32,12 @@ def load_and_prepare_data(processor, target_column) -> None:
     print(processor.df.describe().T)
 
 
-def explore_data(df, target_column, visualizer) -> None:
-    """
-    Explore the dataset using visualizations.
-    """
-    visualizer.plot_pairplot(df, target_column, "Pairplot of Features", 'pairplot.png')
-    visualizer.plot_value_distribution(target_column)
-    corr_matrix = df.drop(columns=[target_column]).corr()
-    visualizer.plot_correlation_matrix(corr_matrix)
-    visualizer.plot_histograms()
-    df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + [target_column])
-    visualizer.plot_pairplot(df_mean, target_column, "Pairplot of Mean Features", 'mean_features_pairplot.png')
-    for group in GROUPED_FEATURES:
-        visualizer.plot_boxplot_melted(group, target_column)
-        visualizer.plot_violinplot_melted(group, target_column)
+def explore_dataset(df, visualizer):
+    """Explore the dataset using various visualizations."""
+    visualizer.plot_correlation_matrix(df.corr())
+    visualizer.plot_histograms(df)
+    df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ["diagnosis"])
+    visualizer.plot_pairplot(df_mean, "diagnosis", "Pairplot of Mean Features", 'plots/mean_features_pairplot.png')
 
 
 def main():
@@ -56,7 +48,7 @@ def main():
     df['diagnosis'] = processor.y
 
     visualizer = Visualizer(processor.df)
-    explore_data(df, target_column="diagnosis", visualizer=visualizer)
+    explore_dataset(df, visualizer)
 
     processor.X = df.drop(columns=['diagnosis', 'id'])
     processor.y = df['diagnosis']

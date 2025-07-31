@@ -3,7 +3,7 @@ import numpy as np
 
 
 class Model:
-    def __init__(self):
+    def __init__(self, name=None):
         """
         Initialize the Model class.
         
@@ -13,6 +13,7 @@ class Model:
         self.loss_history = []
         self.accuracy_history = []
         self.accurancy = 0.0
+        self.name = name
 
 
     def create_network(self, layers):
