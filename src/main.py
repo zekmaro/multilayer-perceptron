@@ -1,4 +1,4 @@
-from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot, plot_loss_history
+from src.visual_tools import plot_features_histogram, plot_correlation_matrix, plot_pairplot, plot_boxplot_melted, plot_violinplot_melted, density_plot, plot_loss_history, plot_accuracy_history
 from src.models.Preprocessing import Preprocessing
 from src.models.Model import Model
 from src.models.DenseLayer import DenseLayer
@@ -42,6 +42,14 @@ def plot_value_distribution(df, feature, target='diagnosis'):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+def get_model_accuracy(model, network, X_test, y_test):
+    y_pred = model.predict(network, X_test)
+    pred_classes = np.argmax(y_pred, axis=1)
+    accuracy = np.mean(pred_classes == y_test)
+    return accuracy
+
 
 def main():
     # try:
@@ -102,12 +110,14 @@ def main():
         model = Model()
         network = model.create_network(layers)
         model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
-
-        # plot_loss_history(model.loss_history)
-        y_pred = network.forward(X_test)
+        
+        y_pred = model.predict(network, X_test)
         pred_classes = np.argmax(y_pred, axis=1)
         accuracy = np.mean(pred_classes == y_test)
         print(f"Test accuracy: {accuracy:.2f}")
+
+        # plot_loss_history(model.loss_history)
+        # plot_accuracy_history(model.accuracy_history)
 
     # except Exception as e:
     #     print(f"Error during preprocessing: {e}")

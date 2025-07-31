@@ -11,6 +11,7 @@ class Model:
             layers (list): List of layers in the neural network.
         """
         self.loss_history = []
+        self.accuracy_history = []
 
 
     def create_network(self, layers):
@@ -36,8 +37,11 @@ class Model:
                 layer.inputs = inputs
                 inputs = layer.forward(inputs)
             y_pred = inputs
+            pred_classes = np.argmax(y_pred, axis=1)
+            accuracy = np.mean(pred_classes == y)
             loss = self.compute_loss(y_pred, y)
             self.loss_history.append(loss)
+            self.accuracy_history.append(accuracy)
             grad_output = self.compute_loss_gradient(y_pred, y)
             
             for layer in reversed(network.layers):
@@ -79,3 +83,17 @@ class Model:
             one_hot[np.arange(len(y_true)), y_true] = 1
             return y_pred - one_hot
         return None
+
+
+    def predict(self, network, X):
+        """
+        Make predictions using the trained model.
+        
+        Args:
+            network (Network): The trained neural network.
+            X (np.ndarray): Input data for prediction.
+        
+        Returns:
+            np.ndarray: Predicted outputs.
+        """
+        return network.predict(X)

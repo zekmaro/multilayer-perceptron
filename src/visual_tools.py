@@ -140,3 +140,21 @@ def plot_loss_history(loss_history):
     plt.grid(True)
     plt.tight_layout()
     plt.show()
+
+
+def plot_accuracy_history(accuracy_history):
+    """
+    Plot the accuracy history over epochs.
+
+    Args:
+        accuracy_history (list): List of accuracy values recorded during training.
+    """
+    plt.figure(figsize=(10, 5))
+    plt.plot(accuracy_history, label='Accuracy', color='green')
+    plt.title('Accuracy History')
+    plt.xlabel('Epochs')
+    plt.ylabel('Accuracy')
+    plt.legend()
+    plt.grid(True)
+    plt.tight_layout()
+    plt.show()
