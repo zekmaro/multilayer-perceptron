@@ -1,77 +1,57 @@
 from src.models.Preprocessing import Preprocessing
-from src.models.Model import Model
 from src.models.DenseLayer import DenseLayer
 from src.models.Visualizer import Visualizer
+from src.models.Model import Model
 from src.header import (
-	DATA_PATH,
-    COLUMNS,
+    DROP_CONCAVE_POINTS,
+    GROUPED_FEATURES,
+    DROP_PERIMETER,
+    DROP_CONCAVITY,
     LABEL_MAPPING,
     MEAN_FEATURES,
+    DROP_COLUMNS,
     CORR_GROUPS,
-    GROUPED_FEATURES,
     DROP_WORST,
-    DROP_PERIMETER,
+	DATA_PATH,
     DROP_AREA,
-    DROP_CONCAVITY,
-    DROP_CONCAVE_POINTS
+    COLUMNS,
 )
-import matplotlib.pyplot as plt
 import pandas as pd
-import pprint
-import seaborn as sns
-import numpy as np
 
 
-def separation_score(df, feature, target='diagnosis'):
-    classes = df[target].unique()
-    means = [df[df[target] == c][feature].mean() for c in classes]
-    stds = [df[df[target] == c][feature].std() for c in classes]
-    return abs(means[0] - means[1]) / (stds[0] + stds[1] + 1e-6)  # small epsilon to avoid div by 0
-
-
-def get_model_accuracy(model, network, X_test, y_test):
-    y_pred = model.predict(network, X_test)
-    pred_classes = np.argmax(y_pred, axis=1)
-    accuracy = np.mean(pred_classes == y_test)
-    return accuracy
-
-
-def main():
-    processor = Preprocessing(DATA_PATH)
-    visualizer = Visualizer(processor.df)
+def load_and_prepare_data(processor, target_column) -> None:
+    """
+    Load and prepare the dataset for analysis.
+    """
     processor.load_data(header=True)
     processor.name_columns(COLUMNS)
-    processor.extract_X_y(target_column="diagnosis", drop_columns=["id"])
+    processor.extract_X_y(target_column=target_column, drop_columns=DROP_COLUMNS)
     processor.encode_target(LABEL_MAPPING)
     processor.check_nulls(processor.df)
-    df = processor.df.copy()
-    processor.check_uniqueness(df)
-    df['diagnosis'] = processor.y
-    print(df.describe().T)
+    processor.check_uniqueness(processor.df)
+    print(processor.df.describe().T)
 
-    visualizer.plot_pairplot(df, 'diagnosis', "Pairplot of Features", 'pairplot.png')
-    visualizer.plot_value_distribution('diagnosis')
 
-    corr_matrix = df.drop(columns=['diagnosis']).corr()
+def explore_data(df, target_column, visualizer) -> None:
+    """
+    Explore the dataset using visualizations.
+    """
+    visualizer.plot_pairplot(df, target_column, "Pairplot of Features", 'pairplot.png')
+    visualizer.plot_value_distribution(target_column)
+    corr_matrix = df.drop(columns=[target_column]).corr()
     visualizer.plot_correlation_matrix(corr_matrix)
-
     visualizer.plot_histograms()
-
-    df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ['diagnosis'])
-    visualizer.plot_pairplot(df_mean, 'diagnosis', "Pairplot of Mean Features", 'mean_features_pairplot.png')
-
+    df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + [target_column])
+    visualizer.plot_pairplot(df_mean, target_column, "Pairplot of Mean Features", 'mean_features_pairplot.png')
     for group in GROUPED_FEATURES:
-        visualizer.plot_boxplot_melted(group, 'diagnosis')
-        visualizer.plot_violinplot_melted(group, 'diagnosis')
+        visualizer.plot_boxplot_melted(group, target_column)
+        visualizer.plot_violinplot_melted(group, target_column)
 
-    processor.X = df.drop(columns=['diagnosis', 'id'])
-    processor.y = df['diagnosis']
 
-    processor.normalize_features()
-    X_train, y_train, X_test, y_test = processor.split_data()
-    print(X_train.shape)
-    print(y_train.shape)
-
+def build_and_train_model(X_train, y_train):
+    """
+    Build and train the neural network model.
+    """
     layers = [
         DenseLayer(units=16, activation_name='relu', input_dim=X_train.shape[1]),
         DenseLayer(units=8, activation_name='relu'),
@@ -80,8 +60,28 @@ def main():
     model = Model()
     network = model.create_network(layers)
     model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
+    return model, network
 
-    accuracy = get_model_accuracy(model, network, X_test, y_test.to_numpy())
+
+def main():
+    processor = Preprocessing(DATA_PATH)
+    load_and_prepare_data(processor, target_column="diagnosis")
+
+    df = processor.df.copy()
+    df['diagnosis'] = processor.y
+
+    visualizer = Visualizer(processor.df)
+    explore_data(df, target_column="diagnosis", visualizer=visualizer)
+
+    processor.X = df.drop(columns=['diagnosis', 'id'])
+    processor.y = df['diagnosis']
+    processor.normalize_features()
+    X_train, y_train, X_test, y_test = processor.split_data()
+    print(X_train.shape)
+    print(y_train.shape)
+
+    model, network = build_and_train_model(X_train, y_train)
+    accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
     print(f"Model accuracy: {accuracy:.2f}")
 
     visualizer.plot_loss_history(model.loss_history)

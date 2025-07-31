@@ -12,6 +12,7 @@ class Model:
         """
         self.loss_history = []
         self.accuracy_history = []
+        self.accurancy = 0.0
 
 
     def create_network(self, layers):
@@ -105,3 +106,10 @@ class Model:
             np.ndarray: Predicted outputs.
         """
         return network.predict(X)
+
+
+    def get_model_accuracy(self, network, X_test, y_test):
+        y_pred = self.predict(network, X_test)
+        pred_classes = np.argmax(y_pred, axis=1)
+        self.accuracy = np.mean(pred_classes == y_test)
+        return self.accuracy

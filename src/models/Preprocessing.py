@@ -162,6 +162,13 @@ class Preprocessing:
                 group.append(feature)
                 correlated_groups.append(group)
         return correlated_groups
+    
+
+    def get_separation_score(self, feature, target='diagnosis'):
+        classes = self.df[target].unique()
+        means = [self.df[self.df[target] == c][feature].mean() for c in classes]
+        stds = [self.df[self.df[target] == c][feature].std() for c in classes]
+        return abs(means[0] - means[1]) / (stds[0] + stds[1] + 1e-6)
 
 
     def check_nulls(self, df) -> None:
@@ -181,3 +188,4 @@ class Preprocessing:
         self.normalize_features()
         self.split_data()
         self.group_correlated_features(self.df.corr())
+
