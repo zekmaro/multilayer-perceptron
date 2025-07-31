@@ -48,21 +48,6 @@ def explore_data(df, target_column, visualizer) -> None:
         visualizer.plot_violinplot_melted(group, target_column)
 
 
-def build_and_train_model(X_train, y_train):
-    """
-    Build and train the neural network model.
-    """
-    layers = [
-        DenseLayer(units=16, activation_name='relu', input_dim=X_train.shape[1]),
-        DenseLayer(units=8, activation_name='relu'),
-        DenseLayer(units=2, activation_name='softmax'),
-    ]
-    model = Model()
-    network = model.create_network(layers)
-    model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
-    return model, network
-
-
 def main():
     processor = Preprocessing(DATA_PATH)
     load_and_prepare_data(processor, target_column="diagnosis")
@@ -75,12 +60,21 @@ def main():
 
     processor.X = df.drop(columns=['diagnosis', 'id'])
     processor.y = df['diagnosis']
+
     processor.normalize_features()
     X_train, y_train, X_test, y_test = processor.split_data()
     print(X_train.shape)
     print(y_train.shape)
 
-    model, network = build_and_train_model(X_train, y_train)
+    model = Model()
+    layers = [
+        DenseLayer(units=16, activation_name='relu', input_dim=X_train.shape[1]),
+        DenseLayer(units=8, activation_name='relu'),
+        DenseLayer(units=2, activation_name='softmax'),
+    ]
+    network = model.create_network(layers)
+    model.fit(network, X_train, y_train.to_numpy(), epochs=100, batch_size=32, learning_rate=0.001)
+
     accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
     print(f"Model accuracy: {accuracy:.2f}")
 
