@@ -62,3 +62,6 @@ DROP_CONCAVITY = [
 DROP_CONCAVE_POINTS = [
     "concave_points_mean", "concave_points_se"
 ]
+
+
+# ADD PATHS TO PLOTS

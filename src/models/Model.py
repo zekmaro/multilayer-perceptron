@@ -25,25 +25,33 @@ class Model:
         return Network(layers)
 
 
-    def fit(self, network, X, y, epochs=1000, batch_size=32, learning_rate=0.01):
+    def fit(self, network, X, y, epochs=1000, batch_size=32, learning_rate=0.01, epsilon=1e-6):
         """
         Train the model on the provided data.
         """
-
-        # implement early stopping
+        last_loss = float('inf')
         for _ in range(epochs):
             inputs = X
             for layer in network.layers:
                 layer.inputs = inputs
                 inputs = layer.forward(inputs)
+
             y_pred = inputs
             pred_classes = np.argmax(y_pred, axis=1)
             accuracy = np.mean(pred_classes == y)
             loss = self.compute_loss(y_pred, y)
+
             self.loss_history.append(loss)
             self.accuracy_history.append(accuracy)
+
             grad_output = self.compute_loss_gradient(y_pred, y)
-            
+            print(f"Epoch {_ + 1}/{epochs} - loss: {loss:.4f} accuracy: {accuracy:.4f}")
+
+            if abs(last_loss - loss) < epsilon:
+                print(f"Early stopping at epoch {_ + 1}")
+                break
+            last_loss = loss
+
             for layer in reversed(network.layers):
                 grad_output = layer.backward(grad_output)
                 layer.weights -= learning_rate * layer.dL_dW

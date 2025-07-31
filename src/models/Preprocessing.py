@@ -164,9 +164,20 @@ class Preprocessing:
         return correlated_groups
 
 
-    def check_nulls(self, df) -> bool:
-        return df.isnull().values.any()
+    def check_nulls(self, df) -> None:
+        print("\nMissing values:")
+        print(df.isnull().sum())
+    
+
+    def check_uniqueness(self, df) -> None:
+        print("\nUnique values per column:")
+        print(df.nunique())
 
 
-    def preprocess(self):
-        pass
+    def preprocess_pipeline(self):
+        self.check_nulls(self.df)
+        self.check_uniqueness(self.df)
+        self.encode_target(LABEL_MAPPING)
+        self.normalize_features()
+        self.split_data()
+        self.group_correlated_features(self.df.corr())
