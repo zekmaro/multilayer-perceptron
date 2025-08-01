@@ -1,4 +1,6 @@
+from src.models.DenseLayer import DenseLayer
 from src.models.Network import Network
+from typing import List
 import numpy as np
 
 
@@ -16,9 +18,16 @@ class Model:
         self.name = name
 
 
-    def create_network(self, layers):
+    def create_network(self, layers: List[Network]) -> Network:
         """
         Create a neural network with the specified architecture.
+
+        Args:
+            layers (list): List of layer configurations.
+        
+        Returns:
+            Network: An instance of the Network class
+            initialized with the provided layers.
         """
         for i in range(0, len(layers)):
             if layers[i].input_dim is None:
@@ -27,9 +36,27 @@ class Model:
         return Network(layers)
 
 
-    def fit(self, network, X, y, epochs=1000, batch_size=32, learning_rate=0.01, epsilon=1e-6):
+    def fit(
+        self,
+        network: Network,
+        X: np.ndarray,
+        y: np.ndarray,
+        epochs: int = 1000,
+        batch_size: int = 32,
+        learning_rate: int = 0.01,
+        epsilon: int = 1e-6
+    ) -> None:
         """
         Train the model on the provided data.
+
+        Args:
+            network (Network): The neural network to train.
+            X (np.ndarray): Input features for training.
+            y (np.ndarray): Target labels for training.
+            epochs (int): Number of training epochs.
+            batch_size (int): Size of each training batch.
+            learning_rate (float): Learning rate for weight updates.
+            epsilon (float): Threshold for early stopping based on loss change.
         """
         last_loss = float('inf')
         for _ in range(epochs):
@@ -60,13 +87,18 @@ class Model:
                 layer.bias -= learning_rate * layer.dL_db
 
 
-    def compute_loss(self, y_pred, y_true, loss_function='cross_entropy'):
+    def compute_loss(
+            self,
+            y_pred: np.ndarray,
+            y_true: np.ndarray,
+            loss_function: str = 'cross_entropy'
+        ) -> float:
         """
         Compute the loss for the current predictions.
         
         Args:
-            X (np.ndarray): Predictions from the network.
-            y (np.ndarray): True labels.
+            y_pred (np.ndarray): Predictions from the network.
+            y_true (np.ndarray): True labels.
             loss_function (str): Type of loss function to use.
         
         Returns:
@@ -76,7 +108,12 @@ class Model:
             return -np.mean(y_true * np.log(y_pred[:, 1] + 1e-15) + (1 - y_true) * np.log(y_pred[:, 0] + 1e-15))
 
 
-    def compute_loss_gradient(self, y_pred, y_true, loss_function='cross_entropy'):
+    def compute_loss_gradient(
+            self,
+            y_pred: np.ndarray,
+            y_true: np.ndarray,
+            loss_function: str = 'cross_entropy'
+        ) -> np.ndarray:
         """
         Compute the gradient of the loss with respect to the predictions.
         
@@ -95,7 +132,7 @@ class Model:
         return None
 
 
-    def predict(self, network, X):
+    def predict(self, network: Network, X: np.ndarray) -> np.ndarray:
         """
         Make predictions using the trained model.
         
@@ -109,7 +146,23 @@ class Model:
         return network.predict(X)
 
 
-    def get_model_accuracy(self, network, X_test, y_test):
+    def get_model_accuracy(
+            self,
+            network: Network,
+            X_test: np.ndarray,
+            y_test: np.ndarray
+        ) -> float:
+        """
+        Calculate the accuracy of the model on the test set.
+        
+        Args:
+            network (Network): The trained neural network.
+            X_test (np.ndarray): Test features.
+            y_test (np.ndarray): Test labels.
+        
+        Returns:
+            float: Accuracy of the model on the test set.
+        """
         y_pred = self.predict(network, X_test)
         pred_classes = np.argmax(y_pred, axis=1)
         self.accuracy = np.mean(pred_classes == y_test)

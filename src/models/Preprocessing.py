@@ -23,7 +23,7 @@ class Preprocessing:
         self.y = None
     
 
-    def load_data(self, header: bool = True):
+    def load_data(self, header: bool = True) -> None:
         """
         Load data from the specified file path into a pandas DataFrame.
         
@@ -43,7 +43,7 @@ class Preprocessing:
             raise Exception(f"An error occurred while loading data: {e}")
 
 
-    def name_columns(self, columns: List[str]):
+    def name_columns(self, columns: List[str]) -> None:
         """
         Name the columns of the DataFrame.
         
@@ -60,7 +60,10 @@ class Preprocessing:
     
 
     def extract_X_y(
-        self, target_column: str, drop_columns: List[str] = None):
+        self,
+        target_column: str,
+        drop_columns: List[str] = None
+    ) -> None:
         """
         Extract features and target variable from the DataFrame.
         
@@ -82,7 +85,7 @@ class Preprocessing:
         self.X = self.X.drop(columns=[target_column])
     
 
-    def encode_target(self, mapping: dict):
+    def encode_target(self, mapping: dict) -> None:
         """
         Encode the target variable using a mapping dictionary.
         
@@ -99,7 +102,7 @@ class Preprocessing:
             raise ValueError("Invalid mapping, resulting in NaN values in target variable.")
 
 
-    def normalize_features(self):
+    def normalize_features(self) -> None:
         """
         Normalize the features data using z-score normalization.
         
@@ -164,28 +167,44 @@ class Preprocessing:
         return correlated_groups
     
 
-    def get_separation_score(self, feature, target='diagnosis'):
+    def get_separation_score(
+            self,
+            feature: str,
+            target: str = 'diagnosis'
+        ) -> float:
+        """
+        Calculate the separation score for a feature with respect to the target variable.
+
+        Args:
+            feature (str): Name of the feature to evaluate.
+            target (str): Name of the target variable.
+        
+        Returns:
+            float: Separation score
+        """
         classes = self.df[target].unique()
         means = [self.df[self.df[target] == c][feature].mean() for c in classes]
         stds = [self.df[self.df[target] == c][feature].std() for c in classes]
         return abs(means[0] - means[1]) / (stds[0] + stds[1] + 1e-6)
 
 
-    def check_nulls(self, df) -> None:
+    def check_nulls(self, df: pd.DataFrame) -> None:
+        """
+        Check for null values in the DataFrame.
+
+        Args:
+            df (pd.DataFrame): DataFrame to check for null values.
+        """
         print("\nMissing values:")
         print(df.isnull().sum())
     
 
-    def check_uniqueness(self, df) -> None:
+    def check_uniqueness(self, df: pd.DataFrame) -> None:
+        """
+        Check the uniqueness of values in each column of the DataFrame.
+        
+        Args:
+            df (pd.DataFrame): DataFrame to check for uniqueness.
+        """
         print("\nUnique values per column:")
         print(df.nunique())
-
-
-    def preprocess_pipeline(self):
-        self.check_nulls(self.df)
-        self.check_uniqueness(self.df)
-        self.encode_target(LABEL_MAPPING)
-        self.normalize_features()
-        self.split_data()
-        self.group_correlated_features(self.df.corr())
-

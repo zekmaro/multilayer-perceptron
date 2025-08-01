@@ -67,24 +67,28 @@ def train_models(
 
 
 def main():
-    processor = Preprocessing(DATA_PATH)
-    load_and_prepare_data(processor, target_column="diagnosis")
+    try: 
+        processor = Preprocessing(DATA_PATH)
+        load_and_prepare_data(processor, target_column="diagnosis")
 
-    df = processor.df.copy()
-    df['diagnosis'] = processor.y
+        df = processor.df.copy()
+        df['diagnosis'] = processor.y
 
-    visualizer = Visualizer()
-    explore_dataset(df, visualizer)
+        visualizer = Visualizer()
+        explore_dataset(df, visualizer)
 
-    processor.X = df.drop(columns=['diagnosis', 'id'])
-    processor.y = df['diagnosis']
+        processor.X = df.drop(columns=['diagnosis', 'id'])
+        processor.y = df['diagnosis']
 
-    processor.normalize_features()
-    X_train, y_train, X_test, y_test = processor.split_data()
-    print(X_train.shape)
-    print(y_train.shape)
+        processor.normalize_features()
+        X_train, y_train, X_test, y_test = processor.split_data()
+        print(X_train.shape)
+        print(y_train.shape)
 
-    train_models(X_train, y_train, X_test, y_test)
+        train_models(X_train, y_train, X_test, y_test)
+
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":
