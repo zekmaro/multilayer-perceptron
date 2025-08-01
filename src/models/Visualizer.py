@@ -1,5 +1,5 @@
 import matplotlib.pyplot as plt
-from typing import List
+from typing import List, Dict
 import seaborn as sns
 import pandas as pd
 
@@ -222,6 +222,37 @@ class Visualizer:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+    
+
+    def compare_loss_histories(
+            self,
+            loss_histories: Dict[str, List[float]],
+            title: str = 'Loss Comparison',
+            filename: str = 'plots/loss_comparison.png',
+            save_in_file: bool = True
+        ) -> None:
+        """
+        Compare multiple loss histories in a single plot.
+        Args:
+            loss_histories (List[List[float]]): List of loss history lists to compare.
+            labels (List[str]): Labels for each loss history.
+            title (str): Title for the plot.
+            filename (str): File path to save the plot.
+            save_in_file (bool): Whether to save the plot to a file.
+        """
+        plt.figure(figsize=(10, 5))
+        for label, history in loss_histories.items():
+            plt.plot(history, label=label)
+        plt.title(title)
+        plt.xlabel('Epochs')
+        plt.ylabel('Loss')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        if save_in_file:
+            plt.savefig(filename)
+        else:
+            plt.show()            
 
 
     def plot_accuracy_history(self, accuracy_history: List[float]) -> None:
@@ -240,6 +271,37 @@ class Visualizer:
         plt.grid(True)
         plt.tight_layout()
         plt.show()
+    
+
+    def compare_accuracy_histories(
+            self,
+            accuracy_histories: Dict[str, List[float]],
+            title: str = 'Accuracy Comparison',
+            filename: str = 'plots/accuracy_comparison.png',
+            save_in_file: bool = True
+        ) -> None:
+        """
+        Compare multiple accuracy histories in a single plot.
+        Args:
+            accuracy_histories (List[List[float]]): List of accuracy history lists to compare.
+            labels (List[str]): Labels for each accuracy history.
+            title (str): Title for the plot.
+            filename (str): File path to save the plot.
+            save_in_file (bool): Whether to save the plot to a file.
+        """
+        plt.figure(figsize=(10, 5))
+        for label, history in accuracy_histories.items():
+            plt.plot(history, label=label)
+        plt.title(title)
+        plt.xlabel('Epochs')
+        plt.ylabel('Accuracy')
+        plt.legend()
+        plt.grid(True)
+        plt.tight_layout()
+        if save_in_file:
+            plt.savefig(filename)
+        else:
+            plt.show()
 
 
     def plot_value_distribution(

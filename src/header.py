@@ -67,4 +67,14 @@ DROP_COLUMNS = [
     "id"
 ]
 
+LOSS_VALUES_MAP = {
+    "gradient_decent": [],
+    "adam": []
+}
+
+ACCURACY_VALUES_MAP = {
+    "gradient_decent": [],
+    "adam": []
+}
+
 # ADD PATHS TO PLOTS

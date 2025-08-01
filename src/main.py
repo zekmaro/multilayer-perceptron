@@ -4,6 +4,8 @@ from src.models.Visualizer import Visualizer
 from src.models.Model import Model
 from src.config import MODEL_CONFIGS
 from src.header import (
+    ACCURACY_VALUES_MAP,
+    LOSS_VALUES_MAP,
     LABEL_MAPPING,
     MEAN_FEATURES,
     DROP_COLUMNS,
@@ -14,9 +16,13 @@ import pandas as pd
 import numpy as np
 
 
-def load_and_prepare_data(processor, target_column: str) -> None:
+def load_and_prepare_data(processor: Preprocessing, target_column: str) -> None:
     """
     Load and prepare the dataset for analysis.
+
+    Args:
+        processor (Preprocessing): Instance of the Preprocessing class.
+        target_column (str): Name of the target column to extract.
     """
     processor.load_data(header=True)
     processor.name_columns(COLUMNS)
@@ -27,8 +33,14 @@ def load_and_prepare_data(processor, target_column: str) -> None:
     print(processor.df.describe().T)
 
 
-def explore_dataset(df, visualizer):
-    """Explore the dataset using various visualizations."""
+def explore_dataset(df: pd.DataFrame, visualizer: Visualizer) -> None:
+    """
+    Explore the dataset using various visualizations.
+    
+    Args:
+        df (pd.DataFrame): DataFrame containing the dataset.
+        visualizer (Visualizer): Instance of the Visualizer class.
+    """
     visualizer.plot_correlation_matrix(df.corr())
     visualizer.plot_histograms(df)
     df_mean = pd.DataFrame(df, columns=MEAN_FEATURES + ["diagnosis"])
@@ -39,7 +51,8 @@ def train_models(
         X_train: pd.DataFrame,
         y_train: np.dnarray,
         X_test: pd.DataFrame,
-        y_test: np.dnarray
+        y_test: np.dnarray,
+        visualizer: Visualizer
     ) -> None:
     """
     Train models based on the configurations defined in MODEL_CONFIGS.
@@ -62,9 +75,13 @@ def train_models(
             batch_size=config["params"]["batch_size"],
             learning_rate=config["params"]["learning_rate"]
         )
+        LOSS_VALUES_MAP[config["params"]["algorithm"]].append(model.loss_history)
+        ACCURACY_VALUES_MAP[config["params"]["algorithm"]].append(model.accuracy_history)
         accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
         print(f"Model {config['name']} accuracy: {accuracy:.2f}")
 
+    visualizer.plot_loss_history(LOSS_VALUES_MAP)
+    visualizer.plot_accuracy_history(ACCURACY_VALUES_MAP)
 
 def main():
     try: 
@@ -85,7 +102,7 @@ def main():
         print(X_train.shape)
         print(y_train.shape)
 
-        train_models(X_train, y_train, X_test, y_test)
+        train_models(X_train, y_train, X_test, y_test, visualizer)
 
     except Exception as e:
         print(f"An error occurred: {e}")
