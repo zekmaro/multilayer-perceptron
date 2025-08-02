@@ -14,7 +14,6 @@ class Model:
         """
         self.loss_history = []
         self.accuracy_history = []
-        self.accurancy = 0.0
         self.name = name
         self.algo_mapping = {
             "gradient_decent": self.fit_gradient_descent,
@@ -58,7 +57,7 @@ class Model:
             y (np.ndarray): Target labels for training.
             params (dict): Configuration parameters for training.
         """
-        raise NotImplementedError("RMSprop optimizer is not implemented yet.")
+        
     
 
     def fit_sgd(
@@ -244,10 +243,9 @@ class Model:
         return network.predict(X)
 
 
-    def get_model_accuracy(
+    def get_accuracy(
             self,
-            network: Network,
-            X_test: np.ndarray,
+            y_pred: np.ndarray,
             y_test: np.ndarray
         ) -> float:
         """
@@ -261,7 +259,70 @@ class Model:
         Returns:
             float: Accuracy of the model on the test set.
         """
-        y_pred = self.predict(network, X_test)
         pred_classes = np.argmax(y_pred, axis=1)
-        self.accuracy = np.mean(pred_classes == y_test)
-        return self.accuracy
+        return np.mean(pred_classes == y_test)
+
+    def get_precision(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
+        """
+        Calculate the precision of the model predictions.
+        
+        Args:
+            y_pred (np.ndarray): Predicted labels.
+            y_true (np.ndarray): True labels.
+        
+        Returns:
+            float: Precision score.
+        """
+        true_positive = np.sum((y_pred == 1) & (y_true == 1))
+        false_positive = np.sum((y_pred == 1) & (y_true == 0))
+        return true_positive / (true_positive + false_positive) if (true_positive + false_positive) > 0 else 0.0
+
+
+    def get_recall(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
+        """
+        Calculate the recall of the model predictions.
+        
+        Args:
+            y_pred (np.ndarray): Predicted labels.
+            y_true (np.ndarray): True labels.
+        
+        Returns:
+            float: Recall score.
+        """
+        true_positive = np.sum((y_pred == 1) & (y_true == 1))
+        false_negative = np.sum((y_pred == 0) & (y_true == 1))
+        return true_positive / (true_positive + false_negative) if (true_positive + false_negative) > 0 else 0.0
+    
+
+    def get_f1_score(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
+        """
+        Calculate the F1 score of the model predictions.
+
+        Args:
+            y_pred (np.ndarray): Predicted labels.
+            y_true (np.ndarray): True labels.
+
+        Returns:
+            float: F1 score.
+        """
+        precision = self.get_precision(y_pred, y_true)
+        recall = self.get_recall(y_pred, y_true)
+        return 2 * (precision * recall) / (precision + recall) if (precision + recall) > 0 else 0.0
+    
+
+    def get_confusion_matrix(self, y_pred: np.ndarray, y_true: np.ndarray) -> np.ndarray:
+        """
+        Calculate the confusion matrix for the model predictions.
+
+        Args:
+            y_pred (np.ndarray): Predicted labels.
+            y_true (np.ndarray): True labels.
+        
+        Returns:
+            np.ndarray: Confusion matrix.
+        """
+        TP = np.sum((y_pred == 1) & (y_true == 1))
+        TN = np.sum((y_pred == 0) & (y_true == 0))
+        FP = np.sum((y_pred == 1) & (y_true == 0))
+        FN = np.sum((y_pred == 0) & (y_true == 1))
+        return np.array([[TN, FP], [FN, TP]])

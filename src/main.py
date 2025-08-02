@@ -49,9 +49,9 @@ def explore_dataset(df: pd.DataFrame, visualizer: Visualizer) -> None:
 
 def train_models(
         X_train: pd.DataFrame,
-        y_train: np.dnarray,
+        y_train: np.ndarray,
         X_test: pd.DataFrame,
-        y_test: np.dnarray,
+        y_test: np.ndarray,
         visualizer: Visualizer
     ) -> None:
     """
@@ -67,21 +67,34 @@ def train_models(
         model = Model(name=config["name"])
         layers = [DenseLayer(**layer) for layer in config["layers"]]
         network = model.create_network(layers)
+
         model.fit(
             network,
             X_train,
-            y_train.to_numpy(),
+            y_train,
             epochs=config["params"]["epochs"],
             batch_size=config["params"]["batch_size"],
             learning_rate=config["params"]["learning_rate"]
         )
+
         LOSS_VALUES_MAP[config["params"]["algorithm"]].append(model.loss_history)
         ACCURACY_VALUES_MAP[config["params"]["algorithm"]].append(model.accuracy_history)
-        accuracy = model.get_model_accuracy(network, X_test, y_test.to_numpy())
-        print(f"Model {config['name']} accuracy: {accuracy:.2f}")
 
-    visualizer.plot_loss_history(LOSS_VALUES_MAP)
-    visualizer.plot_accuracy_history(ACCURACY_VALUES_MAP)
+        y_pred = model.predict(network, X_test)
+
+        accuracy = model.get_accuracy(y_pred, y_test)
+        precision = model.get_precision(y_pred, y_test)
+        recall = model.get_recall(y_pred, y_test)
+        F1_score = model.get_f1_score(y_pred, y_test)
+
+        print(f"Model {config['name']} accuracy: {accuracy:.2f}")
+        print(f"Model {config['name']} precision: {precision:.2f}")
+        print(f"Model {config['name']} recall: {recall:.2f}")
+        print(f"Model {config['name']} F1 score: {F1_score:.2f}")
+
+    visualizer.compare_loss_histories(LOSS_VALUES_MAP)
+    visualizer.compare_accuracy_histories(ACCURACY_VALUES_MAP)
+
 
 def main():
     try: 
