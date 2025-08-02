@@ -86,8 +86,8 @@ def train_models(
             **fit_params
         )
 
-        LOSS_VALUES_MAP[config["params"]["algorithm"]].append(model.loss_history)
-        ACCURACY_VALUES_MAP[config["params"]["algorithm"]].append(model.accuracy_history)
+        LOSS_VALUES_MAP[config["params"]].append(model.loss_history)
+        ACCURACY_VALUES_MAP[config["params"]].append(model.accuracy_history)
 
         y_pred = model.predict(network, X_test)
 

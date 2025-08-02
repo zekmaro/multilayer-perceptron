@@ -19,7 +19,7 @@ class Model:
         self.optimizer = optimizer
 
 
-    def create_network(self, layers: List[Network]) -> Network:
+    def create_network(self, layers: List[DenseLayer]) -> Network:
         """
         Create a neural network with the specified architecture.
 
@@ -33,6 +33,7 @@ class Model:
         for i in range(0, len(layers)):
             if layers[i].input_dim is None:
                 layers[i].input_dim = layers[i - 1].units
+                print(f"Setting input_dim for layer {i} to {layers[i].input_dim}")
             layers[i].initialize()
         return Network(layers)
 
