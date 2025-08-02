@@ -1,29 +1,19 @@
 MODEL_CONFIGS = [
     {
-        "name": "SOFTGRAD",
+        "name": "1",
         "layers": [
             {"units": 16, "activation_name": "relu"},
             {"units": 8, "activation_name": "relu"},
             {"units": 2, "activation_name": "softmax"},
         ],
-        "params": {
+        "optimizer": "gradient_descent",
+        "optimizer_params": {
+            "learning_rate": 0.01,
+        },
+        "fit_params": {
             "epochs": 100,
             "batch_size": 32,
-            "learning_rate": 0.001,
-            "algorithm": "gradient_descent"
-        }
-    },
-    {
-        "name": "ADAM",
-        "layers": [
-            {"units": 16, "activation_name": "relu"},
-            {"units": 2, "activation_name": "softmax"},
-        ],
-        "params": {
-            "epochs": 50,
-            "batch_size": 16,
-            "learning_rate": 0.001,
-            "algorithm": "adam"
+            "epsilon": 1e-6
         }
     },
 ]

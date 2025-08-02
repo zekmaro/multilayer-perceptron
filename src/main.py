@@ -1,4 +1,5 @@
 from src.models.Preprocessing import Preprocessing
+from src.models.Optimizers import OPTIMIZER_CLASSES
 from src.models.DenseLayer import DenseLayer
 from src.models.Visualizer import Visualizer
 from src.models.Model import Model
@@ -64,7 +65,17 @@ def train_models(
         y_test (np.dnarray): Testing labels.
     """
     for config in MODEL_CONFIGS:
-        model = Model(name=config["name"])
+
+        opt_params = config.get("optimizer_params", {})
+        fit_params = config.get("fit_params", {})
+        optimizer_type = config["optimizer"]
+
+        optimizer_class = OPTIMIZER_CLASSES.get(optimizer_type.lower(), None)
+        if optimizer_class is None:
+            raise ValueError(f"Optimizer {optimizer_type} is not recognized.")
+        optimizer = optimizer_class(**opt_params)
+
+        model = Model(name=config["name"], optimizer=optimizer)
         layers = [DenseLayer(**layer) for layer in config["layers"]]
         network = model.create_network(layers)
 
@@ -72,9 +83,7 @@ def train_models(
             network,
             X_train,
             y_train,
-            epochs=config["params"]["epochs"],
-            batch_size=config["params"]["batch_size"],
-            learning_rate=config["params"]["learning_rate"]
+            **fit_params
         )
 
         LOSS_VALUES_MAP[config["params"]["algorithm"]].append(model.loss_history)
@@ -97,7 +106,7 @@ def train_models(
 
 
 def main():
-    try: 
+    # try: 
         processor = Preprocessing(DATA_PATH)
         load_and_prepare_data(processor, target_column="diagnosis")
 
@@ -105,7 +114,7 @@ def main():
         df['diagnosis'] = processor.y
 
         visualizer = Visualizer()
-        explore_dataset(df, visualizer)
+        # explore_dataset(df, visualizer)
 
         processor.X = df.drop(columns=['diagnosis', 'id'])
         processor.y = df['diagnosis']
@@ -117,8 +126,8 @@ def main():
 
         train_models(X_train, y_train, X_test, y_test, visualizer)
 
-    except Exception as e:
-        print(f"An error occurred: {e}")
+    # except Exception as e:
+    #     print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

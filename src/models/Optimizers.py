@@ -108,3 +108,12 @@ class Adam(Optimizer):
             grad_w (np.ndarray): Gradient of the loss with respect to the weights.
             grad_b (np.ndarray): Gradient of the loss with respect to the biases.
         """
+        pass
+
+
+OPTIMIZER_CLASSES = {
+    "gradient_descent": GD,
+    "momentum": Momentum,
+    "rmsprop": RMSProp,
+    "adam": Adam,
+}

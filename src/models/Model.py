@@ -1,11 +1,12 @@
 from src.models.DenseLayer import DenseLayer
 from src.models.Network import Network
+from src.models.Optimizers import Optimizer
 from typing import List
 import numpy as np
 
 
 class Model:
-    def __init__(self, name=None):
+    def __init__(self, name : str = None, optimizer: Optimizer = None):
         """
         Initialize the Model class.
         
@@ -15,12 +16,7 @@ class Model:
         self.loss_history = []
         self.accuracy_history = []
         self.name = name
-        self.algo_mapping = {
-            "gradient_decent": self.fit_gradient_descent,
-            "SGD": self.fit_sgd,
-            "RMSprop": self.fit_rmsprop,
-            "adam": self.fit_adam
-        }
+        self.optimizer = optimizer
 
 
     def create_network(self, layers: List[Network]) -> Network:
@@ -39,87 +35,30 @@ class Model:
                 layers[i].input_dim = layers[i - 1].units
             layers[i].initialize()
         return Network(layers)
-    
 
-    def fit_rmsprop(
+
+    def fit(
         self,
         network: Network,
         X: np.ndarray,
         y: np.ndarray,
-        params: dict
+        epochs: int = 1000,
+        batch_size: int = 32,
+        learning_rate: float = 0.01,
+        epsilon: float = 1e-6,
     ) -> None:
         """
-        Train the model using RMSprop optimization algorithm.
+        Train the model on the provided data.
 
         Args:
             network (Network): The neural network to train.
             X (np.ndarray): Input features for training.
             y (np.ndarray): Target labels for training.
-            params (dict): Configuration parameters for training.
+            epochs (int): Number of training epochs.
+            batch_size (int): Size of each training batch.
+            learning_rate (float): Learning rate for weight updates.
+            epsilon (float): Threshold for early stopping based on loss change.
         """
-        
-    
-
-    def fit_sgd(
-        self,
-        network: Network,
-        X: np.ndarray,
-        y: np.ndarray,
-        params: dict
-    ) -> None:
-        """
-        Train the model using Stochastic Gradient Descent (SGD).
-
-        Args:
-            network (Network): The neural network to train.
-            X (np.ndarray): Input features for training.
-            y (np.ndarray): Target labels for training.
-            params (dict): Configuration parameters for training.
-        """
-        raise NotImplementedError("SGD optimizer is not implemented yet.")
-
-
-    def fit_adam(
-        self,
-        network: Network,
-        X: np.ndarray,
-        y: np.ndarray,
-        params: dict
-    ) -> None:
-        """
-        Train the model using the Adam optimization algorithm.
-
-        Args:
-            network (Network): The neural network to train.
-            X (np.ndarray): Input features for training.
-            y (np.ndarray): Target labels for training.
-            params (dict): Configuration parameters for training.
-        """
-        raise NotImplementedError("Adam optimizer is not implemented yet.")
-
-
-    def fit_gradient_descent(
-        self,
-        network: Network,
-        X: np.ndarray,
-        y: np.ndarray,
-        params: dict
-    ) -> None:
-        """
-        Train the model using gradient descent.
-
-        Args:
-            network (Network): The neural network to train.
-            X (np.ndarray): Input features for training.
-            y (np.ndarray): Target labels for training.
-            params (dict): Configuration parameters for training.
-        """
-
-        epochs = params.get("epochs", 1000)
-        batch_size = params.get("batch_size", 32)
-        learning_rate = params.get("learning_rate", 0.01)
-        epsilon = params.get("epsilon", 1e-6)
-    
         last_loss = float('inf')
         for _ in range(epochs):
             inputs = X
@@ -145,43 +84,7 @@ class Model:
 
             for layer in reversed(network.layers):
                 grad_output = layer.backward(grad_output)
-                layer.weights -= learning_rate * layer.dL_dW
-                layer.bias -= learning_rate * layer.dL_db
-
-
-    def fit(
-        self,
-        network: Network,
-        X: np.ndarray,
-        y: np.ndarray,
-        epochs: int = 1000,
-        batch_size: int = 32,
-        learning_rate: int = 0.01,
-        epsilon: int = 1e-6,
-        algorithm: str = "gradient_decent"
-    ) -> None:
-        """
-        Train the model on the provided data.
-
-        Args:
-            network (Network): The neural network to train.
-            X (np.ndarray): Input features for training.
-            y (np.ndarray): Target labels for training.
-            epochs (int): Number of training epochs.
-            batch_size (int): Size of each training batch.
-            learning_rate (float): Learning rate for weight updates.
-            epsilon (float): Threshold for early stopping based on loss change.
-        """
-        params = {
-            "epochs": epochs,
-            "batch_size": batch_size,
-            "learning_rate": learning_rate,
-            "epsilon": epsilon
-        }
-        if algorithm in self.algo_mapping:
-            self.algo_mapping[algorithm](network, X, y, params)
-        else:
-            raise ValueError(f"Unknown training algorithm: {algorithm}. Available options: {list(self.algo_mapping.keys())}")
+                self.optimizer.update(layer, layer.dL_dW, layer.dL_db)
 
 
     def compute_loss(
