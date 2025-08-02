@@ -43,13 +43,13 @@ class Momentum(Optimizer):
         """
         if self.velocity_w is None:
             self.velocity_w = np.zeros_like(layer.weights)
+        if self.velocity_b is None:
             self.velocity_b = np.zeros_like(layer.biases)
 
-        self.velocity_w = self.momentum * self.velocity_w - self.learning_rate * grad_w
-        self.velocity_b = self.momentum * self.velocity_b - self.learning_rate * grad_b
-
-        layer.weights += self.velocity_w
-        layer.biases += self.velocity_b
+        velocity_w = self.momentum * self.velocity_w + (1 - self.momentum) * grad_w
+        velocity_b = self.momentum * self.velocity_b + (1 - self.momentum) * grad_b
+        layer.weights -= self.learning_rate * velocity_w
+        layer.biases -= self.learning_rate * velocity_b
 
 
 class NesterovMomentum(Momentum):
@@ -74,7 +74,16 @@ class RMSProp(Optimizer):
             grad_w (np.ndarray): Gradient of the loss with respect to the weights.
             grad_b (np.ndarray): Gradient of the loss with respect to the biases.
         """
-        
+        if self.cache_w is None:
+            self.cache_w = np.zeros_like(layer.weights)
+        if self.cache_b is None:
+            self.cache_b = np.zeros_like(layer.biases)
+
+        self.cache_w = self.decay_rate * self.cache_w + (1 - self.decay_rate) * np.square(grad_w)
+        self.cache_b = self.decay_rate * self.cache_b + (1 - self.decay_rate) * np.square(grad_b)
+
+        layer.weights -= self.learning_rate * grad_w / (np.sqrt(self.cache_w) + self.epsilon)
+        layer.biases -= self.learning_rate * grad_b / (np.sqrt(self.cache_b) + self.epsilon)
 
 
 class Adam(Optimizer):
