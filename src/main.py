@@ -113,7 +113,7 @@ def train_models(
 
 
 def main():
-    # try: 
+    try:
         processor = Preprocessing(DATA_PATH)
         load_and_prepare_data(processor, target_column="diagnosis")
 
@@ -121,7 +121,7 @@ def main():
         df['diagnosis'] = processor.y
 
         visualizer = Visualizer()
-        # explore_dataset(df, visualizer)
+        explore_dataset(df, visualizer)
 
         processor.X = df.drop(columns=['diagnosis', 'id'])
         processor.y = df['diagnosis']
@@ -133,8 +133,8 @@ def main():
 
         train_models(X_train, y_train, X_test, y_test, visualizer)
 
-    # except Exception as e:
-    #     print(f"An error occurred: {e}")
+    except Exception as e:
+        print(f"An error occurred: {e}")
 
 
 if __name__ == "__main__":

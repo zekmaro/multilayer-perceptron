@@ -13,7 +13,7 @@ class Visualizer:
             self,
             corr_matrix: pd.DataFrame,
             save_in_file: bool = True,
-            filename: str = 'plot/correlation_matrix.png'
+            filename: str = 'plots/correlation_matrix.png',
         ) -> None:
         """
         Plot a correlation matrix using seaborn heatmap.
@@ -335,8 +335,8 @@ class Visualizer:
     def plot_histograms(
             self,
             df: pd.DataFrame,
-            save_in_file: bool,
-            filename: str
+            save_in_file: bool = True,
+            filename: str = 'plots/histograms.png'
         ) -> None:
         """
         Create histograms for all features in the DataFrame.
