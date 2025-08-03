@@ -240,7 +240,7 @@ class Visualizer:
             filename (str): File path to save the plot.
             save_in_file (bool): Whether to save the plot to a file.
         """
-        plt.figure(figsize=(10, 5))
+        plt.figure(figsize=(12, 6))
         for label, history in loss_histories.items():
             plt.plot(history, label=label)
         plt.title(title)
@@ -248,7 +248,7 @@ class Visualizer:
         plt.ylabel('Loss')
         plt.legend()
         plt.grid(True)
-        plt.tight_layout()
+        # plt.tight_layout()
         if save_in_file:
             plt.savefig(filename)
         else:

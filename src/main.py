@@ -1,9 +1,9 @@
-from src.models.Preprocessing import Preprocessing
 from src.models.Optimizers import OPTIMIZER_CLASSES
+from src.models.Preprocessing import Preprocessing
 from src.models.DenseLayer import DenseLayer
 from src.models.Visualizer import Visualizer
-from src.models.Model import Model
 from src.config import MODEL_CONFIGS
+from src.models.Model import Model
 from src.header import (
     ACCURACY_VALUES_MAP,
     LOSS_VALUES_MAP,
@@ -76,7 +76,12 @@ def train_models(
         optimizer = optimizer_class(**opt_params)
 
         model = Model(name=config["name"], optimizer=optimizer)
-        layers = [DenseLayer(**layer) for layer in config["layers"]]
+        # layers = [DenseLayer(**layer) for layer in config["layers"]]
+        layers = [
+            DenseLayer(16, activation_name='relu', input_dim=X_train.shape[1]),
+            DenseLayer(8, activation_name='relu'),
+            DenseLayer(2, activation_name='softmax')
+        ]
         network = model.create_network(layers)
 
         model.fit(
@@ -86,15 +91,17 @@ def train_models(
             **fit_params
         )
 
-        LOSS_VALUES_MAP[config["params"]].append(model.loss_history)
-        ACCURACY_VALUES_MAP[config["params"]].append(model.accuracy_history)
+        LOSS_VALUES_MAP[config["optimizer"]] = model.loss_history
+        ACCURACY_VALUES_MAP[config["optimizer"]] = model.accuracy_history
 
         y_pred = model.predict(network, X_test)
+        one_hot = np.zeros_like(y_pred)
+        one_hot[np.arange(len(y_test)), y_test] = 1
 
         accuracy = model.get_accuracy(y_pred, y_test)
-        precision = model.get_precision(y_pred, y_test)
-        recall = model.get_recall(y_pred, y_test)
-        F1_score = model.get_f1_score(y_pred, y_test)
+        precision = model.get_precision(y_pred, one_hot)
+        recall = model.get_recall(y_pred, one_hot)
+        F1_score = model.get_f1_score(y_pred, one_hot)
 
         print(f"Model {config['name']} accuracy: {accuracy:.2f}")
         print(f"Model {config['name']} precision: {precision:.2f}")

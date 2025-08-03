@@ -68,12 +68,16 @@ DROP_COLUMNS = [
 ]
 
 LOSS_VALUES_MAP = {
-    "gradient_decent": [],
+    "gradient_descent": [],
+    "momentum": [],
+    "rmsprop": [],
     "adam": []
 }
 
 ACCURACY_VALUES_MAP = {
-    "gradient_decent": [],
+    "gradient_descent": [],
+    "momentum": [],
+    "rmsprop": [],
     "adam": []
 }
 

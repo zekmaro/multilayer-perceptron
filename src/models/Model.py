@@ -166,6 +166,7 @@ class Model:
         pred_classes = np.argmax(y_pred, axis=1)
         return np.mean(pred_classes == y_test)
 
+
     def get_precision(self, y_pred: np.ndarray, y_true: np.ndarray) -> float:
         """
         Calculate the precision of the model predictions.

@@ -21,35 +21,32 @@ class GD(Optimizer):
             grad_b (np.ndarray): Gradient of the loss with respect to the biases.
         """
         layer.weights -= self.learning_rate * grad_w
-        layer.biases -= self.learning_rate * grad_b
+        layer.bias -= self.learning_rate * grad_b
 
 
 class Momentum(Optimizer):
     def __init__(self, learning_rate: float = 0.01, momentum: float = 0.9):
         self.learning_rate = learning_rate
         self.momentum = momentum
-        self.velocity_w = None
-        self.velocity_b = None
-
+        self.velocity_w = {}  # key: layer, value: array
+        self.velocity_b = {}
 
     def update(self, layer, grad_w, grad_b):
-        """
-        Update the weights and biases of the layer using Momentum optimizer.
-        
-        Args:
-            layer (DenseLayer): The layer to update.
-            grad_w (np.ndarray): Gradient of the loss with respect to the weights.
-            grad_b (np.ndarray): Gradient of the loss with respect to the biases.
-        """
-        if self.velocity_w is None:
-            self.velocity_w = np.zeros_like(layer.weights)
-        if self.velocity_b is None:
-            self.velocity_b = np.zeros_like(layer.biases)
+        if layer not in self.velocity_w:
+            self.velocity_w[layer] = np.zeros_like(grad_w)
+        if layer not in self.velocity_b:
+            self.velocity_b[layer] = np.zeros_like(grad_b)
 
-        velocity_w = self.momentum * self.velocity_w + (1 - self.momentum) * grad_w
-        velocity_b = self.momentum * self.velocity_b + (1 - self.momentum) * grad_b
-        layer.weights -= self.learning_rate * velocity_w
-        layer.biases -= self.learning_rate * velocity_b
+        self.velocity_w[layer] = (
+            self.momentum * self.velocity_w[layer] + (1 - self.momentum) * grad_w
+        )
+        self.velocity_b[layer] = (
+            self.momentum * self.velocity_b[layer] + (1 - self.momentum) * grad_b
+        )
+
+        layer.weights -= self.learning_rate * self.velocity_w[layer]
+        layer.bias -= self.learning_rate * self.velocity_b[layer]
+
 
 
 class NesterovMomentum(Momentum):
@@ -61,29 +58,25 @@ class RMSProp(Optimizer):
         self.learning_rate = learning_rate
         self.decay_rate = decay_rate
         self.epsilon = epsilon
-        self.cache_w = None
-        self.cache_b = None
-
+        self.cache_w = {}  # Per-layer cache
+        self.cache_b = {}
 
     def update(self, layer, grad_w, grad_b):
-        """
-        Update the weights and biases of the layer using RMSProp optimizer.
-        
-        Args:
-            layer (DenseLayer): The layer to update.
-            grad_w (np.ndarray): Gradient of the loss with respect to the weights.
-            grad_b (np.ndarray): Gradient of the loss with respect to the biases.
-        """
-        if self.cache_w is None:
-            self.cache_w = np.zeros_like(layer.weights)
-        if self.cache_b is None:
-            self.cache_b = np.zeros_like(layer.biases)
+        if layer not in self.cache_w:
+            self.cache_w[layer] = np.zeros_like(grad_w)
+        if layer not in self.cache_b:
+            self.cache_b[layer] = np.zeros_like(grad_b)
 
-        self.cache_w = self.decay_rate * self.cache_w + (1 - self.decay_rate) * np.square(grad_w)
-        self.cache_b = self.decay_rate * self.cache_b + (1 - self.decay_rate) * np.square(grad_b)
+        self.cache_w[layer] = (
+            self.decay_rate * self.cache_w[layer] + (1 - self.decay_rate) * np.square(grad_w)
+        )
+        self.cache_b[layer] = (
+            self.decay_rate * self.cache_b[layer] + (1 - self.decay_rate) * np.square(grad_b)
+        )
 
-        layer.weights -= self.learning_rate * grad_w / (np.sqrt(self.cache_w) + self.epsilon)
-        layer.biases -= self.learning_rate * grad_b / (np.sqrt(self.cache_b) + self.epsilon)
+        layer.weights -= self.learning_rate * grad_w / (np.sqrt(self.cache_w[layer]) + self.epsilon)
+        layer.bias -= self.learning_rate * grad_b / (np.sqrt(self.cache_b[layer]) + self.epsilon)
+
 
 
 class Adam(Optimizer):
