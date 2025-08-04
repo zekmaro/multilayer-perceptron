@@ -1,11 +1,25 @@
-import numpy as np
-import pickle
-from src.models.Model import Model
 from src.header import LOSS_VALUES_MAP, ACCURACY_VALUES_MAP
 from src.models.Visualizer import Visualizer
+import numpy as np
+import pickle
+import os
 
 
-def evaluate_model(model_path, network_path, X_test, y_test):
+def evaluate_model(
+        model_path: str,
+        network_path: str,
+        X_test: np.ndarray,
+        y_test: np.ndarray
+    ) -> None:
+    """
+    Evaluate the model using the test data and print the results.
+    
+    Args:
+        model_path (str): Path to the saved model.
+        network_path (str): Path to the saved network.
+        X_test (np.ndarray): Test features.
+        y_test (np.ndarray): Test labels.
+    """
     with open(model_path, "rb") as f:
         model = pickle.load(f)
 
@@ -32,8 +46,10 @@ def evaluate_model(model_path, network_path, X_test, y_test):
     ACCURACY_VALUES_MAP[model.name] = model.accuracy_history
 
 
-def main():
+def main() -> None:
+    """Main function to evaluate all trained models and visualize results."""
     try:
+        os.makedirs("trained_models", exist_ok=True)
         X_test = np.load("saved/X_test.npy")
         y_test = np.load("saved/y_test.npy")
 

@@ -1,12 +1,15 @@
-import numpy as np
-import os
-import pickle
-from src.models.DenseLayer import DenseLayer
-from src.models.Model import Model
 from src.models.Optimizers import OPTIMIZER_CLASSES
+from src.models.DenseLayer import DenseLayer
 from src.config import MODEL_CONFIGS
+from src.models.Model import Model
+import numpy as np
 
-def main():
+
+def main() -> None:
+    """
+    Main function to train the model with different optimizers
+    and save the trained models.
+    """
     try: 
         X_train = np.load("saved/X_train.npy")
         y_train = np.load("saved/y_train.npy")
