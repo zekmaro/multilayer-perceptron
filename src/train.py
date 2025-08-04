@@ -7,34 +7,33 @@ from src.models.Optimizers import OPTIMIZER_CLASSES
 from src.config import MODEL_CONFIGS
 
 def main():
-    X_train = np.load("saved/X_train.npy")
-    y_train = np.load("saved/y_train.npy")
+    try: 
+        X_train = np.load("saved/X_train.npy")
+        y_train = np.load("saved/y_train.npy")
 
-    for config in MODEL_CONFIGS:
-        optimizer_class = OPTIMIZER_CLASSES[config["optimizer"]]
-        optimizer = optimizer_class(**config.get("optimizer_params", {}))
+        for config in MODEL_CONFIGS:
+            optimizer_class = OPTIMIZER_CLASSES[config["optimizer"]]
+            optimizer = optimizer_class(**config.get("optimizer_params", {}))
 
-        model = Model(name=config["name"], optimizer=optimizer)
-        layers = [
-            DenseLayer(16, activation_name='relu', input_dim=X_train.shape[1]),
-            DenseLayer(8, activation_name='relu'),
-            DenseLayer(2, activation_name='softmax')
-        ]
-        network = model.create_network(layers)
+            model = Model(name=config["name"], optimizer=optimizer)
+            layers = [
+                DenseLayer(**layer) for layer in config["layers"]
+            ]
+            network = model.create_network(layers, input_dim=X_train.shape[1])
 
-        model.fit(
-            network,
-            X_train,
-            y_train,
-            **config.get("fit_params", {})
-        )
+            model.fit(
+                network,
+                X_train,
+                y_train,
+                **config.get("fit_params", {})
+            )
 
-        model_filename = f"trained_models/{config['name']}.pkl"
-        os.makedirs("trained_models", exist_ok=True)
-        with open(model_filename, "wb") as f:
-            pickle.dump(model, f)
+            model_path = f"trained_models/{config['name']}"
+            model.save(network, model_path, config=config)
+    
+    except Exception as e:
+        print(f"An error occurred during training: {e}")
 
-        print(f"Saved model: {model_filename}")
 
 if __name__ == "__main__":
     main()

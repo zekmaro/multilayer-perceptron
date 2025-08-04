@@ -1,10 +1,16 @@
 import numpy as np
 import pickle
 from src.models.Model import Model
+from src.header import LOSS_VALUES_MAP, ACCURACY_VALUES_MAP
+from src.models.Visualizer import Visualizer
 
-def evaluate_model(model_path, X_test, y_test):
+
+def evaluate_model(model_path, network_path, X_test, y_test):
     with open(model_path, "rb") as f:
         model = pickle.load(f)
+
+    with open(network_path, "rb") as f:
+        network = pickle.load(f)
 
     y_pred = model.predict(network, X_test)
     one_hot = np.zeros_like(y_pred)
@@ -22,19 +28,38 @@ def evaluate_model(model_path, X_test, y_test):
     print(f"  F1 Score:  {f1:.2f}")
     print()
 
+    LOSS_VALUES_MAP[model.name] = model.loss_history
+    ACCURACY_VALUES_MAP[model.name] = model.accuracy_history
+
+
 def main():
-    X_test = np.load("saved/X_test.npy")
-    y_test = np.load("saved/y_test.npy")
+    try:
+        X_test = np.load("saved/X_test.npy")
+        y_test = np.load("saved/y_test.npy")
 
-    model_paths = [
-        "trained_models/momentum.pkl",
-        "trained_models/rmsprop.pkl",
-        "trained_models/adam.pkl",
-        "trained_models/gradient_descent.pkl"
-    ]
+        model_paths = [
+            "trained_models/gradient_descent/model.pkl",
+            "trained_models/rmsprop/model.pkl",
+            "trained_models/adam/model.pkl",
+            "trained_models/momentum/model.pkl"
+        ]
+        network_paths = [
+            "trained_models/gradient_descent/network.pkl",
+            "trained_models/rmsprop/network.pkl",
+            "trained_models/adam/network.pkl",
+            "trained_models/momentum/network.pkl"
+        ]
 
-    for path in model_paths:
-        evaluate_model(path, X_test, y_test)
+        for model_path, network_path in zip(model_paths, network_paths):
+            evaluate_model(model_path, network_path, X_test, y_test)
+        
+        visualizer = Visualizer()
+        visualizer.compare_loss_histories(LOSS_VALUES_MAP)
+        visualizer.compare_accuracy_histories(ACCURACY_VALUES_MAP)
+
+    except Exception as e:
+        print(f"Error occurred: {e}")
+
 
 if __name__ == "__main__":
     main()

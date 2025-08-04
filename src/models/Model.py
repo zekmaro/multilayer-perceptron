@@ -3,6 +3,9 @@ from src.models.Network import Network
 from src.models.Optimizers import Optimizer
 from typing import List
 import numpy as np
+import os
+import pickle
+import json
 
 
 class Model:
@@ -19,7 +22,7 @@ class Model:
         self.optimizer = optimizer
 
 
-    def create_network(self, layers: List[DenseLayer]) -> Network:
+    def create_network(self, layers: List[DenseLayer], input_dim: int) -> Network:
         """
         Create a neural network with the specified architecture.
 
@@ -30,6 +33,9 @@ class Model:
             Network: An instance of the Network class
             initialized with the provided layers.
         """
+        if not layers:
+            raise ValueError("The network must have at least one layer.")
+        layers[0].input_dim = input_dim  # Set input dimension for the first layer
         for i in range(0, len(layers)):
             if layers[i].input_dim is None:
                 layers[i].input_dim = layers[i - 1].units
@@ -230,3 +236,25 @@ class Model:
         FP = np.sum((y_pred == 1) & (y_true == 0))
         FN = np.sum((y_pred == 0) & (y_true == 1))
         return np.array([[TN, FP], [FN, TP]])
+
+
+    def save(self, network, path: str, config: dict = None):
+        """
+        Save the model and network to the given directory.
+
+        Args:
+            network: The trained network (list of DenseLayer objects).
+            path (str): Directory path to save the model.
+            config (dict): Optional config dict to save alongside.
+        """
+        os.makedirs(path, exist_ok=True)
+
+        with open(os.path.join(path, "model.pkl"), "wb") as f:
+            pickle.dump(self, f)
+
+        with open(os.path.join(path, "network.pkl"), "wb") as f:
+            pickle.dump(network, f)
+
+        if config:
+            with open(os.path.join(path, "config.json"), "w") as f:
+                json.dump(config, f, indent=4)
