@@ -53,6 +53,16 @@ def main() -> None:
         X_test = np.load("saved/X_test.npy")
         y_test = np.load("saved/y_test.npy")
 
+        """
+        For evaluation. Refact in before
+        x = pd.read_csv("data_test.csv")
+        x.columns = COLUMNS
+        X_test = x.drop(columns=["diagnosis", "id"])
+        y_test = x["diagnosis"]
+        y_test = y_test.map(LABEL_MAPPING)
+        X_test = (X_test - X_test.mean()) / X_test.std()
+        """
+
         model_paths = [
             "trained_models/gradient_descent/model.pkl",
             "trained_models/rmsprop/model.pkl",

@@ -47,6 +47,17 @@ def main() -> None:
         visualizer = Visualizer()
         explore_dataset(df, visualizer)
 
+        """
+        For evaluation. Refact in before
+        x = pd.read_csv("data_training.csv")
+        x.columns = COLUMNS
+        processor.X = x.drop(columns=["diagnosis", "id"])
+        print(processor.X.columns)
+        processor.y = x["diagnosis"]
+        processor.y = processor.y.map(LABEL_MAPPING)
+        processor.normalize_features()
+        """
+
         X_train, y_train, X_test, y_test = processor.split_data()
 
         # Save splits
