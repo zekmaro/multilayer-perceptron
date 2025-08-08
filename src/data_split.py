@@ -34,6 +34,7 @@ def main() -> None:
     """
     try:
         os.makedirs("saved", exist_ok=True)
+        os.makedirs("plots", exist_ok=True)
         processor = Preprocessing(DATA_PATH)
         processor.load_data(header=True)
         processor.name_columns(COLUMNS)
@@ -47,16 +48,13 @@ def main() -> None:
         visualizer = Visualizer()
         explore_dataset(df, visualizer)
 
-        """
-        For evaluation. Refact in before
-        x = pd.read_csv("data_training.csv")
-        x.columns = COLUMNS
-        processor.X = x.drop(columns=["diagnosis", "id"])
-        print(processor.X.columns)
-        processor.y = x["diagnosis"]
-        processor.y = processor.y.map(LABEL_MAPPING)
-        processor.normalize_features()
-        """
+        # x = pd.read_csv("data_training.csv")
+        # x.columns = COLUMNS
+        # processor.X = x.drop(columns=["diagnosis", "id"])
+        # print(processor.X.columns)
+        # processor.y = x["diagnosis"]
+        # processor.y = processor.y.map(LABEL_MAPPING)
+        # processor.normalize_features()
 
         X_train, y_train, X_test, y_test = processor.split_data()
 

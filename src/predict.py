@@ -1,8 +1,10 @@
-from src.header import LOSS_VALUES_MAP, ACCURACY_VALUES_MAP
+from src.header import LOSS_VALUES_MAP, ACCURACY_VALUES_MAP, COLUMNS, LABEL_MAPPING
 from src.models.Visualizer import Visualizer
 import numpy as np
 import pickle
 import os
+import pandas as pd
+
 
 
 def evaluate_model(
@@ -30,10 +32,16 @@ def evaluate_model(
     one_hot = np.zeros_like(y_pred)
     one_hot[np.arange(len(y_test)), y_test] = 1
 
+    y_pred = np.argmax(y_pred, axis=1)
+
+    # print(f"y_pred: {y_pred}")
+    # print(f"y_test: {y_test}")
+
     acc = model.get_accuracy(y_pred, y_test)
-    precision = model.get_precision(y_pred, one_hot)
-    recall = model.get_recall(y_pred, one_hot)
-    f1 = model.get_f1_score(y_pred, one_hot)
+
+    precision = model.get_precision(y_pred, y_test)
+    recall = model.get_recall(y_pred, y_test)
+    f1 = model.get_f1_score(y_pred, y_test)
 
     print(f"Model: {model_path}")
     print(f"  Accuracy:  {acc:.2f}")
@@ -53,15 +61,12 @@ def main() -> None:
         X_test = np.load("saved/X_test.npy")
         y_test = np.load("saved/y_test.npy")
 
-        """
-        For evaluation. Refact in before
-        x = pd.read_csv("data_test.csv")
-        x.columns = COLUMNS
-        X_test = x.drop(columns=["diagnosis", "id"])
-        y_test = x["diagnosis"]
-        y_test = y_test.map(LABEL_MAPPING)
-        X_test = (X_test - X_test.mean()) / X_test.std()
-        """
+        # x = pd.read_csv("data_test.csv")
+        # x.columns = COLUMNS
+        # X_test = x.drop(columns=["diagnosis", "id"])
+        # y_test = x["diagnosis"]
+        # y_test = y_test.map(LABEL_MAPPING)
+        # X_test = (X_test - X_test.mean()) / X_test.std()
 
         model_paths = [
             "trained_models/gradient_descent/model.pkl",
