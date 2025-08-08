@@ -3,3 +3,6 @@
 __pycache__
 *.png
 *.icloud
+saved
+trained_models
+plots
