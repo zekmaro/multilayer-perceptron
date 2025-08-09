@@ -27,6 +27,23 @@ def explore_dataset(df: pd.DataFrame, visualizer: Visualizer) -> None:
     visualizer.plot_pairplot(df_mean, "diagnosis", "Pairplot of Mean Features")
 
 
+def save_splits(X_train: np.ndarray, y_train: np.ndarray, X_test: np.ndarray, y_test: np.ndarray) -> None:
+    """
+    Save the training and testing splits to .npy files.
+
+    Args:
+        X_train (np.ndarray): Training features.
+        y_train (np.ndarray): Training labels.
+        X_test (np.ndarray): Testing features.
+        y_test (np.ndarray): Testing labels.
+    """
+    np.save("saved/X_train.npy", X_train)
+    np.save("saved/y_train.npy", y_train)
+    np.save("saved/X_test.npy", X_test)
+    np.save("saved/y_test.npy", y_test)
+    print("Data splits saved successfully.")
+
+
 def main() -> None:
     """
     Main function to process the dataset,
@@ -48,24 +65,10 @@ def main() -> None:
         visualizer = Visualizer()
         explore_dataset(df, visualizer)
 
-        # x = pd.read_csv("data_training.csv")
-        # x.columns = COLUMNS
-        # processor.X = x.drop(columns=["diagnosis", "id"])
-        # print(processor.X.columns)
-        # processor.y = x["diagnosis"]
-        # processor.y = processor.y.map(LABEL_MAPPING)
-        # processor.normalize_features()
-
         X_train, y_train, X_test, y_test = processor.split_data()
-
-        # Save splits
-        np.save("saved/X_train.npy", X_train)
-        np.save("saved/y_train.npy", y_train)
-        np.save("saved/X_test.npy", X_test)
-        np.save("saved/y_test.npy", y_test)
-
+        save_splits(X_train, y_train, X_test, y_test)
         print("Data successfully split and saved.")
-    
+
     except Exception as e:
         print(f"An error occurred during data processing: {e}")
 

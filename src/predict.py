@@ -61,6 +61,7 @@ def main() -> None:
         X_test = np.load("saved/X_test.npy")
         y_test = np.load("saved/y_test.npy")
 
+<<<<<<< HEAD
         # x = pd.read_csv("data_test.csv")
         # x.columns = COLUMNS
         # X_test = x.drop(columns=["diagnosis", "id"])
@@ -68,6 +69,8 @@ def main() -> None:
         # y_test = y_test.map(LABEL_MAPPING)
         # X_test = (X_test - X_test.mean()) / X_test.std()
 
+=======
+>>>>>>> a74df4c (refact: rm 42 eval code)
         model_paths = [
             "trained_models/gradient_descent/model.pkl",
             "trained_models/rmsprop/model.pkl",
