@@ -67,7 +67,6 @@ def main() -> None:
 
         X_train, y_train, X_test, y_test = processor.split_data()
         save_splits(X_train, y_train, X_test, y_test)
-        print("Data successfully split and saved.")
 
     except Exception as e:
         print(f"An error occurred during data processing: {e}")
