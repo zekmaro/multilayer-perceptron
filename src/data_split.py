@@ -51,7 +51,6 @@ def main() -> None:
     """
     try:
         os.makedirs("saved", exist_ok=True)
-        os.makedirs("plots", exist_ok=True)
         processor = Preprocessing(DATA_PATH)
         processor.load_data(header=True)
         processor.name_columns(COLUMNS)
