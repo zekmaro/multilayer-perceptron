@@ -57,20 +57,9 @@ def evaluate_model(
 def main() -> None:
     """Main function to evaluate all trained models and visualize results."""
     try:
-        os.makedirs("trained_models", exist_ok=True)
         X_test = np.load("saved/X_test.npy")
         y_test = np.load("saved/y_test.npy")
 
-<<<<<<< HEAD
-        # x = pd.read_csv("data_test.csv")
-        # x.columns = COLUMNS
-        # X_test = x.drop(columns=["diagnosis", "id"])
-        # y_test = x["diagnosis"]
-        # y_test = y_test.map(LABEL_MAPPING)
-        # X_test = (X_test - X_test.mean()) / X_test.std()
-
-=======
->>>>>>> a74df4c (refact: rm 42 eval code)
         model_paths = [
             "trained_models/gradient_descent/model.pkl",
             "trained_models/rmsprop/model.pkl",
